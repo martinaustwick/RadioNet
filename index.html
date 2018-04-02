@@ -43,16 +43,17 @@ d3.csv("data/producers_mod.csv", function(error, reccs) {
     //link.target = nodeByName(link.target);
     var s= nodeByName(recc.source);
     var t = nodeByName(recc.target);
-    links.push({source: s, target: t});
+    console.log(s.name);
+    if(t.name.length>0)links.push({source: s, target: t});
 
     t = nodeByName(recc.recomends_2);
-    links.push({source: s, target: t});
+    if(t.name.length>0)links.push({source: s, target: t});
     t = nodeByName(recc.recomends_3);
-    links.push({source: s, target: t});
+    if(t.name.length>0)links.push({source: s, target: t});
     t = nodeByName(recc.recomends_4);
-    links.push({source: s, target: t});
+    if(t.name.length>0)links.push({source: s, target: t});
     t = nodeByName(recc.recomends_5);
-    links.push({source: s, target: t});
+    if(t.name.length>0)links.push({source: s, target: t});
     //link.id = nodeByName(link.id);
     //link.broadcaster_id = nodeByName(link.broadcaster_id);
   });
@@ -87,7 +88,8 @@ d3.csv("data/producers_mod.csv", function(error, reccs) {
       .nodes(nodes)
       .links(links)
       .on("tick", tick)
-      .linkDistance(50)
+      .linkDistance(20)
+      .charge(-50)
       .start();
 
   function tick() {
