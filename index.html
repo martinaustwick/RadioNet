@@ -207,8 +207,7 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
       });
 
    node.append("text")
-      //.attr("dx", 12)
-      // .attr("dy", ".35em")
+      .style("font-size", 10)
       .attr('stroke', 'black')
       .text(function(d) { 
         console.log(d);
@@ -220,8 +219,8 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
       .nodes(nodes)
       .links(links)
       .on("tick", tick)
-      .linkDistance(20)
-      .charge(-25)
+      .linkDistance(5)
+      .charge(-60)
       .start();
 
   function tick() {
@@ -248,4 +247,10 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
     
   }
 });
+
+//add zoom capabilities 
+var zoom_handler = d3.zoom()
+    .on("zoom", zoom_actions);
+
+zoom_handler(svg); 
 </script>
