@@ -7,6 +7,13 @@
 .node {
   stroke: #fff;
 }
+
+
+/*.node text {
+  pointer-events: none;
+  font: 10px sans-serif;
+}*/
+
 </style>
 <body>
 <script src="//d3js.org/d3.v3.min.js"></script>
@@ -19,18 +26,42 @@ var svg = d3.select("body").append("svg")
 var force = d3.layout.force()
     .size([width, height]);
 
+
 //d3.csv("graph.csv", function(error, links) {
-d3.csv("data/podcasts.csv", function(error, links) {
+d3.csv("data/producers_mod.csv", function(error, reccs) {
   if (error) throw error;
-  
+
+  //console.log(links);
+
   var nodesByName = {};
   // Create nodes for each unique source and target.
-  links.forEach(function(link) {
-    link.source = nodeByName(link.source);
-    link.target = nodeByName(link.target);
+  var links = [];
+
+  reccs.forEach(function(recc) {
+    //the method removes redundancy
+    //link.source = nodeByName(link.source);
+    //link.target = nodeByName(link.target);
+    var s= nodeByName(recc.source);
+    var t = nodeByName(recc.target);
+    links.push({source: s, target: t});
+
+    t = nodeByName(recc.recomends_2);
+    links.push({source: s, target: t});
+    t = nodeByName(recc.recomends_3);
+    links.push({source: s, target: t});
+    t = nodeByName(recc.recomends_4);
+    links.push({source: s, target: t});
+    t = nodeByName(recc.recomends_5);
+    links.push({source: s, target: t});
+    //link.id = nodeByName(link.id);
+    //link.broadcaster_id = nodeByName(link.broadcaster_id);
   });
+
+  console.log(links);
   // Extract the array of nodes from the map by name.
+  //key/value pair is the context?
   var nodes = d3.values(nodesByName);
+  console.log(nodes);
   // Create the link lines.
   var link = svg.selectAll(".link")
       .data(links)
@@ -39,16 +70,26 @@ d3.csv("data/podcasts.csv", function(error, links) {
   // Create the node circles.
   var node = svg.selectAll(".node")
       .data(nodes)
-    .enter().append("circle")
+    .enter().append("g")
       .attr("class", "node")
-      .attr("r", 4.5)
       .call(force.drag);
+
+  node.append("circle").attr("r", 4.5);
+
+   node.append("text")
+      //.attr("dx", 12)
+      // .attr("dy", ".35em")
+      .attr('stroke', 'black')
+      .text(function(d) { return d.name });
+
   // Start the force layout.
   force
       .nodes(nodes)
       .links(links)
       .on("tick", tick)
+      .linkDistance(50)
       .start();
+
   function tick() {
     link.attr("x1", function(d) { return d.source.x; })
         .attr("y1", function(d) { return d.source.y; })
@@ -56,9 +97,21 @@ d3.csv("data/podcasts.csv", function(error, links) {
         .attr("y2", function(d) { return d.target.y; });
     node.attr("cx", function(d) { return d.x; })
         .attr("cy", function(d) { return d.y; });
+
+    node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
   }
+  //node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+  
+
   function nodeByName(name) {
     return nodesByName[name] || (nodesByName[name] = {name: name});
+  }
+
+  function nodeByNode(node, name) {
+    //console.log(nodesByName[name]);
+    if(!nodesByName[name]) nodesByName[name] = {name: name, node};
+    return nodesByName[name];
+    
   }
 });
 </script>
