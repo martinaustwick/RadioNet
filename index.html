@@ -27,15 +27,18 @@ var force = d3.layout.force()
     .size([width, height]);
 
 
+var nodesByName = {};
+var links = [];
+
 //d3.csv("graph.csv", function(error, links) {
+
+
 d3.csv("data/producers_mod.csv", function(error, reccs) {
   if (error) throw error;
 
   //console.log(links);
 
-  var nodesByName = {};
-  // Create nodes for each unique source and target.
-  var links = [];
+  
 
   reccs.forEach(function(recc) {
     //the method removes redundancy
@@ -61,13 +64,129 @@ d3.csv("data/producers_mod.csv", function(error, reccs) {
   console.log(links);
   // Extract the array of nodes from the map by name.
   //key/value pair is the context?
+  // var nodes = d3.values(nodesByName);
+  // console.log(nodes);
+  // // Create the link lines.
+  // var link = svg.selectAll(".link")
+  //     .data(links)
+  //   .enter().append("line")
+  //     .attr("class", "link")
+  //     .style("stroke", function(d){
+  //       if(d.source.name[0]=='P') return 'black';
+  //       else return 'blue';
+  //     });
+  // // Create the node circles.
+  // var node = svg.selectAll(".node")
+  //     .data(nodes)
+  //   .enter().append("g")
+  //     .attr("class", "node")
+  //     .call(force.drag);
+
+  // node.append("circle").attr("r", 4.5)
+  //   .attr('fill', function(d)
+  //     {
+  //       if(d.name[0]=='P') return 'black';
+  //       else return 'blue';
+  //     });
+
+  //  node.append("text")
+  //     //.attr("dx", 12)
+  //     // .attr("dy", ".35em")
+  //     .attr('stroke', 'black')
+  //     .text(function(d) { return d.name });
+
+  // // Start the force layout.
+  // force
+  //     .nodes(nodes)
+  //     .links(links)
+  //     .on("tick", tick)
+  //     .linkDistance(20)
+  //     .charge(-50)
+  //     .start();
+
+  // function tick() {
+  //   link.attr("x1", function(d) { return d.source.x; })
+  //       .attr("y1", function(d) { return d.source.y; })
+  //       .attr("x2", function(d) { return d.target.x; })
+  //       .attr("y2", function(d) { return d.target.y; });
+  //   node.attr("cx", function(d) { return d.x; })
+  //       .attr("cy", function(d) { return d.y; });
+
+  //   node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+  // }
+  //node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+  
+
+  function nodeByName(name) {
+    return nodesByName[name] || (nodesByName[name] = {name: name});
+  }
+
+  function nodeByNode(node, name) {
+    //console.log(nodesByName[name]);
+    if(!nodesByName[name]) nodesByName[name] = {name: name, node};
+    return nodesByName[name];
+    
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
+  if (error) throw error;
+
+  //console.log(links);
+
+  reccs.forEach(function(recc) {
+    //the method removes redundancy
+    //link.source = nodeByName(link.source);
+    //link.target = nodeByName(link.target);
+    var s= nodeByName(recc.id);
+    var t = nodeByName(recc.producer_id);
+    if(t.name.length>0)links.push({source: s, target: t});
+
+    var s= nodeByName(recc.id);
+    var t = nodeByName(recc.producer_2_id);
+    if(t.name.length>0)links.push({source: s, target: t});
+
+    var s= nodeByName(recc.id);
+    var t = nodeByName(recc.producer_3_id);
+    if(t.name.length>0)links.push({source: s, target: t});
+
+    // t = nodeByName(recc.recomends_2);
+    // if(t.name.length>0)links.push({source: s, target: t});
+    // t = nodeByName(recc.recomends_3);
+    // if(t.name.length>0)links.push({source: s, target: t});
+    // t = nodeByName(recc.recomends_4);
+    // if(t.name.length>0)links.push({source: s, target: t});
+    // t = nodeByName(recc.recomends_5);
+    // if(t.name.length>0)links.push({source: s, target: t});
+    //link.id = nodeByName(link.id);
+    //link.broadcaster_id = nodeByName(link.broadcaster_id);
+  });
+
+  console.log(links);
+  // Extract the array of nodes from the map by name.
+  //key/value pair is the context?
   var nodes = d3.values(nodesByName);
   console.log(nodes);
   // Create the link lines.
   var link = svg.selectAll(".link")
       .data(links)
     .enter().append("line")
-      .attr("class", "link");
+      .attr("class", "link")
+      .style("stroke", function(d){
+        if(d.source.name[0]=='P') return 'black';
+        else return 'red';
+      });
   // Create the node circles.
   var node = svg.selectAll(".node")
       .data(nodes)
@@ -75,13 +194,26 @@ d3.csv("data/producers_mod.csv", function(error, reccs) {
       .attr("class", "node")
       .call(force.drag);
 
-  node.append("circle").attr("r", 4.5);
+  node.append("circle").attr("r", 4.5)
+    .attr('fill', function(d)
+      {
+        if(d.name[0]=='P') return 'black';
+        else return '#FFFFFF00';
+      })
+    .attr('stroke', function(d)
+      {
+        if(d.name[0]=='P') return '#FFFFFF00';
+        else return 'black';
+      });
 
    node.append("text")
       //.attr("dx", 12)
       // .attr("dy", ".35em")
       .attr('stroke', 'black')
-      .text(function(d) { return d.name });
+      .text(function(d) { 
+        console.log(d);
+        return d.name
+      });
 
   // Start the force layout.
   force
@@ -89,7 +221,7 @@ d3.csv("data/producers_mod.csv", function(error, reccs) {
       .links(links)
       .on("tick", tick)
       .linkDistance(20)
-      .charge(-50)
+      .charge(-25)
       .start();
 
   function tick() {
