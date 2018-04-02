@@ -32,6 +32,9 @@ var links = [];
 
 //d3.csv("graph.csv", function(error, links) {
 
+//add encompassing group for the zoom 
+var g = svg.append("g")
+    .attr("class", "everything");
 
 d3.csv("data/producers_mod.csv", function(error, reccs) {
   if (error) throw error;
@@ -44,19 +47,28 @@ d3.csv("data/producers_mod.csv", function(error, reccs) {
     //the method removes redundancy
     //link.source = nodeByName(link.source);
     //link.target = nodeByName(link.target);
-    var s= nodeByName(recc.source);
-    var t = nodeByName(recc.target);
-    console.log(s.name);
-    if(t.name.length>0)links.push({source: s, target: t});
+    var noTarget = true;
+    if(recc.target.length>0) noTarget = false;
+    if(recc.recomends_2.length>0) noTarget = false;
+    if(recc.recomends_3.length>0) noTarget = false;
+    if(recc.recomends_4.length>0) noTarget = false;
+    if(recc.recomends_5.length>0) noTarget = false;
 
-    t = nodeByName(recc.recomends_2);
-    if(t.name.length>0)links.push({source: s, target: t});
-    t = nodeByName(recc.recomends_3);
-    if(t.name.length>0)links.push({source: s, target: t});
-    t = nodeByName(recc.recomends_4);
-    if(t.name.length>0)links.push({source: s, target: t});
-    t = nodeByName(recc.recomends_5);
-    if(t.name.length>0)links.push({source: s, target: t});
+    if(!noTarget)
+    {
+      var s= nodeByName(recc.source);
+      var t = nodeByName(recc.target);    
+      
+      if(t.name.length>0)links.push({source: s, target: t});
+      t = nodeByName(recc.recomends_2);
+      if(t.name.length>0)links.push({source: s, target: t});
+      t = nodeByName(recc.recomends_3);
+      if(t.name.length>0)links.push({source: s, target: t});
+      t = nodeByName(recc.recomends_4);
+      if(t.name.length>0)links.push({source: s, target: t});
+      t = nodeByName(recc.recomends_5);
+      if(t.name.length>0)links.push({source: s, target: t});
+    }
     //link.id = nodeByName(link.id);
     //link.broadcaster_id = nodeByName(link.broadcaster_id);
   });
@@ -121,6 +133,8 @@ d3.csv("data/producers_mod.csv", function(error, reccs) {
     return nodesByName[name] || (nodesByName[name] = {name: name});
   }
 
+
+
   function nodeByNode(node, name) {
     //console.log(nodesByName[name]);
     if(!nodesByName[name]) nodesByName[name] = {name: name, node};
@@ -149,28 +163,27 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
     //the method removes redundancy
     //link.source = nodeByName(link.source);
     //link.target = nodeByName(link.target);
-    var s= nodeByName(recc.id);
-    var t = nodeByName(recc.producer_id);
-    if(t.name.length>0)links.push({source: s, target: t});
 
-    var s= nodeByName(recc.id);
-    var t = nodeByName(recc.producer_2_id);
-    if(t.name.length>0)links.push({source: s, target: t});
+    var noTarget = true;
+    if(recc.producer_id.length>0) noTarget = false;
+    if(recc.producer_2_id.length>0) noTarget = false;
+    if(recc.producer_3_id.length>0) noTarget = false;
+    
+    if(!noTarget)
+    {
+      var s= nodeByName(recc.id);
+      var t = nodeByName(recc.producer_id);
+      if(t.name.length>0)links.push({source: s, target: t});
 
-    var s= nodeByName(recc.id);
-    var t = nodeByName(recc.producer_3_id);
-    if(t.name.length>0)links.push({source: s, target: t});
+      var s= nodeByName(recc.id);
+      var t = nodeByName(recc.producer_2_id);
+      if(t.name.length>0)links.push({source: s, target: t});
 
-    // t = nodeByName(recc.recomends_2);
-    // if(t.name.length>0)links.push({source: s, target: t});
-    // t = nodeByName(recc.recomends_3);
-    // if(t.name.length>0)links.push({source: s, target: t});
-    // t = nodeByName(recc.recomends_4);
-    // if(t.name.length>0)links.push({source: s, target: t});
-    // t = nodeByName(recc.recomends_5);
-    // if(t.name.length>0)links.push({source: s, target: t});
-    //link.id = nodeByName(link.id);
-    //link.broadcaster_id = nodeByName(link.broadcaster_id);
+      var s= nodeByName(recc.id);
+      var t = nodeByName(recc.producer_3_id);
+      if(t.name.length>0)links.push({source: s, target: t});
+    }
+
   });
 
   console.log(links);
