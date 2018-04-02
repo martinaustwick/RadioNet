@@ -59,15 +59,15 @@ d3.csv("data/producers_mod.csv", function(error, reccs) {
       var s= nodeByName(recc.source);
       var t = nodeByName(recc.target);    
       
-      if(t.name.length>0)links.push({source: s, target: t});
+      if(t.name.length>0)links.push({source: s, target: t, weight:10});
       t = nodeByName(recc.recomends_2);
-      if(t.name.length>0)links.push({source: s, target: t});
+      if(t.name.length>0)links.push({source: s, target: t, weight:10});
       t = nodeByName(recc.recomends_3);
-      if(t.name.length>0)links.push({source: s, target: t});
+      if(t.name.length>0)links.push({source: s, target: t, weight:10});
       t = nodeByName(recc.recomends_4);
-      if(t.name.length>0)links.push({source: s, target: t});
+      if(t.name.length>0)links.push({source: s, target: t, weight:10});
       t = nodeByName(recc.recomends_5);
-      if(t.name.length>0)links.push({source: s, target: t});
+      if(t.name.length>0)links.push({source: s, target: t, weight:10});
     }
     //link.id = nodeByName(link.id);
     //link.broadcaster_id = nodeByName(link.broadcaster_id);
@@ -173,15 +173,13 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
     {
       var s= nodeByName(recc.id);
       var t = nodeByName(recc.producer_id);
-      if(t.name.length>0)links.push({source: s, target: t});
+      if(t.name.length>0)links.push({source: s, target: t, weight:1});
 
-      var s= nodeByName(recc.id);
-      var t = nodeByName(recc.producer_2_id);
-      if(t.name.length>0)links.push({source: s, target: t});
+      t = nodeByName(recc.producer_2_id);
+      if(t.name.length>0)links.push({source: s, target: t, weight:1});
 
-      var s= nodeByName(recc.id);
-      var t = nodeByName(recc.producer_3_id);
-      if(t.name.length>0)links.push({source: s, target: t});
+      t = nodeByName(recc.producer_3_id);
+      if(t.name.length>0)links.push({source: s, target: t, weight:1});
     }
 
   });
@@ -217,7 +215,11 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
       {
         if(d.name[0]=='P') return '#FFFFFF00';
         else return 'black';
-      });
+      })
+    .on("click", function(d){
+        console.log(d.name.length);
+      }
+      );
 
    node.append("text")
       .style("font-size", 10)
@@ -234,7 +236,11 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
       .on("tick", tick)
       .linkDistance(5)
       .charge(-60)
-      .start();
+      .start()
+      .linkStrength(function(link)
+        {
+          return link.weight;
+        });
 
   function tick() {
     link.attr("x1", function(d) { return d.source.x; })
