@@ -27,6 +27,9 @@ var svg = d3.select("body").append("svg")
 //     .size([width, height]);
 
 
+
+
+
 var nodesByName = {};
 var links = [];
 
@@ -62,15 +65,15 @@ d3.csv("data/producers_mod.csv", function(error, reccs) {
       //console.log(s);
       var t = nodeByName(recc.target);    
       
-      if(t.name.length>0)links.push({source: s, target: t, weight:10});
+      if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
       t = nodeByName(recc.recomends_2);
-      if(t.name.length>0)links.push({source: s, target: t, weight:10});
+      if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
       t = nodeByName(recc.recomends_3);
-      if(t.name.length>0)links.push({source: s, target: t, weight:10});
+      if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
       t = nodeByName(recc.recomends_4);
-      if(t.name.length>0)links.push({source: s, target: t, weight:10});
+      if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
       t = nodeByName(recc.recomends_5);
-      if(t.name.length>0)links.push({source: s, target: t, weight:10});
+      if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
     }
     //link.id = nodeByName(link.id);
     //link.broadcaster_id = nodeByName(link.broadcaster_id);
@@ -178,13 +181,13 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
       var s= nodeByNode2(recc, recc.id);
       console.log(s);
       var t = nodeByName(recc.producer_id);
-      if(t.name.length>0)links.push({source: s, target: t, weight:1});
+      if(t.name.length>0)links.push({source: s, target: t, weight:2});
 
       t = nodeByName(recc.producer_2_id);
-      if(t.name.length>0)links.push({source: s, target: t, weight:1});
+      if(t.name.length>0)links.push({source: s, target: t, weight:2});
 
       t = nodeByName(recc.producer_3_id);
-      if(t.name.length>0)links.push({source: s, target: t, weight:1});
+      if(t.name.length>0)links.push({source: s, target: t, weight:2});
     }
 
   });
@@ -259,7 +262,10 @@ var simulation = d3.forceSimulation()
           .nodes(nodes);
                               
 var link_force =  d3.forceLink(links)
-                        .id(function(d) { return d.name; });            
+                        .id(function(d) { return d.name; })
+                        .distance(50)
+                        .strength(function(d){return d.weight;})
+                        ;            
          
 var charge_force = d3.forceManyBody()
     .strength(-50); 
