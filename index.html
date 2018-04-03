@@ -16,15 +16,15 @@
 
 </style>
 <body>
-<script src="//d3js.org/d3.v3.min.js"></script>
+<script src="//d3js.org/d3.v4.min.js"></script>
 <script>
 var width = 960,
     height = 500;
 var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height);
-var force = d3.layout.force()
-    .size([width, height]);
+// var force = d3.layout.force()
+//     .size([width, height]);
 
 
 var nodesByName = {};
@@ -190,7 +190,10 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
   var nodes = d3.values(nodesByName);
   console.log(nodes);
   // Create the link lines.
-  var link = svg.selectAll(".link")
+  var link = //svg.selectAll(".link")
+      g.append("g")
+      .attr("class", "links")
+      .selectAll("line")
       .data(links)
     .enter().append("line")
       .attr("class", "link")
@@ -199,11 +202,14 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
         else return 'red';
       });
   // Create the node circles.
-  var node = svg.selectAll(".node")
+  var node = //svg.selectAll(".node")
+      g.append("g")
+        .attr("class", "nodes") 
+        .selectAll("circle")
       .data(nodes)
     .enter().append("g")
-      .attr("class", "node")
-      .call(force.drag);
+      .attr("class", "node");
+      //.call(force.drag);
 
   node.append("circle").attr("r", 4.5)
     .attr('fill', function(d)
@@ -230,17 +236,39 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
       });
 
   // Start the force layout.
-  force
-      .nodes(nodes)
-      .links(links)
-      .on("tick", tick)
-      .linkDistance(5)
-      .charge(-60)
-      .start()
-      .linkStrength(function(link)
-        {
-          return link.weight;
-        });
+  // force
+  //     .nodes(nodes)
+  //     .links(links)
+  //     .on("tick", tick)
+  //     .linkDistance(5)
+  //     .charge(-60)
+  //     .start()
+  //     .linkStrength(function(link)
+  //       {
+  //         return link.weight;
+  //       });
+
+  //set up the simulation and add forces  
+var simulation = d3.forceSimulation()
+          .nodes(nodes);
+                              
+var link_force =  d3.forceLink(links)
+                        .id(function(d) { return d.name; });            
+         
+var charge_force = d3.forceManyBody()
+    .strength(-100); 
+    
+var center_force = d3.forceCenter(width / 2, height / 2);  
+                      
+simulation
+    .force("charge_force", charge_force)
+    .force("center_force", center_force)
+    .force("links",link_force)
+ ;
+
+        
+//add tick instructions: 
+simulation.on("tick", tick );
 
   function tick() {
     link.attr("x1", function(d) { return d.source.x; })
@@ -265,11 +293,57 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
     return nodesByName[name];
     
   }
-});
+
+  //add drag capabilities  
+var drag_handler = d3.drag()
+  .on("start", drag_start)
+  .on("drag", drag_drag)
+  .on("end", drag_end); 
+  
+drag_handler(node);
+
 
 //add zoom capabilities 
 var zoom_handler = d3.zoom()
     .on("zoom", zoom_actions);
 
-zoom_handler(svg); 
+zoom_handler(svg);     
+
+/** Functions **/
+
+
+//Drag functions 
+//d is the node 
+function drag_start(d) {
+ if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+    d.fx = d.x;
+    d.fy = d.y;
+}
+
+//make sure you can't drag the circle outside the box
+function drag_drag(d) {
+  d.fx = d3.event.x;
+  d.fy = d3.event.y;
+}
+
+function drag_end(d) {
+  if (!d3.event.active) simulation.alphaTarget(0);
+  d.fx = null;
+  d.fy = null;
+}
+
+//Zoom functions 
+function zoom_actions(){
+    g.attr("transform", d3.event.transform)
+}
+
+
+
+
+
+
+
+});
+
+
 </script>
