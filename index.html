@@ -47,7 +47,9 @@ d3.csv("data/producers_mod.csv", function(error, reccs) {
     //the method removes redundancy
     //link.source = nodeByName(link.source);
     //link.target = nodeByName(link.target);
-    var noTarget = true;
+
+    //currently bypassing this logic
+    var noTarget = false;
     if(recc.target.length>0) noTarget = false;
     if(recc.recomends_2.length>0) noTarget = false;
     if(recc.recomends_3.length>0) noTarget = false;
@@ -56,7 +58,8 @@ d3.csv("data/producers_mod.csv", function(error, reccs) {
 
     if(!noTarget)
     {
-      var s= nodeByName(recc.source);
+      var s= nodeByNode(recc, recc.source);
+      //console.log(s);
       var t = nodeByName(recc.target);    
       
       if(t.name.length>0)links.push({source: s, target: t, weight:10});
@@ -73,7 +76,7 @@ d3.csv("data/producers_mod.csv", function(error, reccs) {
     //link.broadcaster_id = nodeByName(link.broadcaster_id);
   });
 
-  console.log(links);
+  //console.log(links);
   // Extract the array of nodes from the map by name.
   //key/value pair is the context?
   // var nodes = d3.values(nodesByName);
@@ -137,7 +140,7 @@ d3.csv("data/producers_mod.csv", function(error, reccs) {
 
   function nodeByNode(node, name) {
     //console.log(nodesByName[name]);
-    if(!nodesByName[name]) nodesByName[name] = {name: name, node};
+    if(!nodesByName[name]) nodesByName[name] = {name: name, node: node};
     return nodesByName[name];
     
   }
@@ -164,14 +167,16 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
     //link.source = nodeByName(link.source);
     //link.target = nodeByName(link.target);
 
-    var noTarget = true;
+    var noTarget = false;
     if(recc.producer_id.length>0) noTarget = false;
     if(recc.producer_2_id.length>0) noTarget = false;
     if(recc.producer_3_id.length>0) noTarget = false;
     
     if(!noTarget)
     {
-      var s= nodeByName(recc.id);
+      //var s= nodeByName(recc.id);
+      var s= nodeByNode2(recc, recc.id);
+      console.log(s);
       var t = nodeByName(recc.producer_id);
       if(t.name.length>0)links.push({source: s, target: t, weight:1});
 
@@ -184,11 +189,11 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
 
   });
 
-  console.log(links);
+  //console.log(links);
   // Extract the array of nodes from the map by name.
   //key/value pair is the context?
   var nodes = d3.values(nodesByName);
-  console.log(nodes);
+  //console.log(nodes);
   // Create the link lines.
   var link = //svg.selectAll(".link")
       g.append("g")
@@ -223,16 +228,17 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
         else return 'black';
       })
     .on("click", function(d){
-        console.log(d.name.length);
+        console.log(d);
       }
       );
 
    node.append("text")
       .style("font-size", 10)
+      .attr("dx", 12)
       .attr('stroke', 'black')
       .text(function(d) { 
-        console.log(d);
-        return d.name
+         if(d.node) return d.node.name
+         else return d.name
       });
 
   // Start the force layout.
@@ -256,7 +262,7 @@ var link_force =  d3.forceLink(links)
                         .id(function(d) { return d.name; });            
          
 var charge_force = d3.forceManyBody()
-    .strength(-100); 
+    .strength(-50); 
     
 var center_force = d3.forceCenter(width / 2, height / 2);  
                       
@@ -287,12 +293,19 @@ simulation.on("tick", tick );
     return nodesByName[name] || (nodesByName[name] = {name: name});
   }
 
-  function nodeByNode(node, name) {
+  function nodeByNode2(node, name) {
     //console.log(nodesByName[name]);
-    if(!nodesByName[name]) nodesByName[name] = {name: name, node};
+    if(!nodesByName[name]) nodesByName[name] = {name: name, node:node};
+    if(!nodesByName[name].node) nodesByName[name].node = node;
+    //nodesByName[name] = {name: name, node:node};
     return nodesByName[name];
-    
   }
+
+  // function newNode(node, name)
+  // {
+  //   //console.log(nodesByName[name]);
+  //   return {name: name, node:node};    
+  // }
 
   //add drag capabilities  
 var drag_handler = d3.drag()
