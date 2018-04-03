@@ -22,7 +22,9 @@ var width = 960,
     height = 500;
 var svg = d3.select("body").append("svg")
     .attr("width", width)
-    .attr("height", height);
+    .attr("height", height)
+    //.style("background-color", "black")
+    ;
 // var force = d3.layout.force()
 //     .size([width, height]);
 
@@ -208,7 +210,14 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
       .style("stroke", function(d){
         if(d.source.name[0]=='P') return 'black';
         else return 'red';
-      });
+      })
+      .style("stroke-width",function(d)
+      {
+        if(d.source.name[0]=='P') return 1;
+        else return 4;
+
+      })
+      ;
   // Create the node circles.
   var node = //svg.selectAll(".node")
       g.append("g")
@@ -219,15 +228,20 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
       .attr("class", "node");
       //.call(force.drag);
 
-  node.append("circle").attr("r", 4.5)
+  node.append("circle")
+    .attr("r", function(d)
+      {
+        if(d.name[0]=='P') return 8;
+        else return 4;
+      })
     .attr('fill', function(d)
       {
         if(d.name[0]=='P') return 'black';
-        else return '#FFFFFF00';
+        else return '#FF1111AA';
       })
     .attr('stroke', function(d)
       {
-        if(d.name[0]=='P') return '#FFFFFF00';
+        if(d.name[0]=='P') return 'black';
         else return 'black';
       })
     .on("click", function(d){
@@ -236,8 +250,8 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
       );
 
    node.append("text")
-      .style("font-size", 10)
-      .attr("dx", 12)
+      .style("font-size", 20)
+      .attr("dx", 8)
       .attr('stroke', 'black')
       .text(function(d) { 
          if(d.node) return d.node.name
@@ -268,14 +282,19 @@ var link_force =  d3.forceLink(links)
                         ;            
          
 var charge_force = d3.forceManyBody()
-    .strength(-50); 
+    .strength(-450); 
     
 var center_force = d3.forceCenter(width / 2, height / 2);  
-                      
+
+
 simulation
     .force("charge_force", charge_force)
     .force("center_force", center_force)
     .force("links",link_force)
+    .force("x_force", d3.forceX(width/2).strength(0.03))
+    .force("y_force", d3.forceY(height/2).strength(0.05))
+    .alpha(0.9)
+    .alphaDecay(0.001)
  ;
 
         
