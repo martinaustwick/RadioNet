@@ -13,11 +13,17 @@
   pointer-events: none;
   font: 10px sans-serif;
 }*/
-
 </style>
+
 <body>
-<script src="//d3js.org/d3.v4.min.js"></script>
+<script type="text/javascript" src="d3.v4.min.js"></script>
+<!--script src="https://d3js.org/d3.v4.min.js"></script-->
+
+
 <script>
+
+
+
 var width = 960,
     height = 500;
 var svg = d3.select("body").append("svg")
@@ -209,7 +215,7 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
       .attr("class", "link")
       .style("stroke", function(d){
         if(d.source.name[0]=='P') return 'black';
-        else return 'red';
+        else return '#FF111100';
       })
       .style("stroke-width",function(d)
       {
@@ -231,12 +237,12 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
   node.append("circle")
     .attr("r", function(d)
       {
-        if(d.name[0]=='P') return 8;
-        else return 4;
+        if(d.name[0]=='P') return 20;
+        else return 20;
       })
     .attr('fill', function(d)
       {
-        if(d.name[0]=='P') return 'black';
+        if(d.name[0]=='P') return '#00000000';
         else return '#FF1111AA';
       })
     .attr('stroke', function(d)
@@ -251,8 +257,15 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
 
    node.append("text")
       .style("font-size", 20)
-      .attr("dx", 8)
-      .attr('stroke', 'black')
+      .attr("dx", 0)
+      .attr("dy",function(d){
+          if(d.name[0]=='P') return 0;
+          else return 0;
+      })
+      .attr('stroke', function(d){
+          if(d.name[0]=='P') return 'black';
+          else return 'red';
+      })
       .text(function(d) { 
          if(d.node) return d.node.name
          else return d.name
@@ -277,7 +290,7 @@ var simulation = d3.forceSimulation()
                               
 var link_force =  d3.forceLink(links)
                         .id(function(d) { return d.name; })
-                        .distance(50)
+                        .distance(40)
                         .strength(function(d){return d.weight;})
                         ;            
          
