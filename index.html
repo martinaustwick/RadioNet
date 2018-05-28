@@ -215,7 +215,8 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
       .attr("class", "link")
       .style("stroke", function(d){
         if(d.source.name[0]=='P') return 'black';
-        else return '#FF111100';
+        //else return '#FF111100'; 
+        else return 'red';
       })
       .style("stroke-width",function(d)
       {
@@ -238,31 +239,37 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
     .attr("r", function(d)
       {
         if(d.name[0]=='P') return 20;
-        else return 20;
+        else return 12;
       })
     .attr('fill', function(d)
       {
         if(d.name[0]=='P') return '#00000000';
-        else return '#FF1111AA';
+        else return '#FF1111';
       })
     .attr('stroke', function(d)
       {
         if(d.name[0]=='P') return 'black';
-        else return 'black';
+        else return '#00000000';
       })
     .on("click", function(d){
-        console.log(d);
+        //this.attr("fill", "black");
+        //onClick();
+        //console.log(d);
       }
       );
 
    node.append("text")
       .style("font-size", 20)
-      .attr("dx", 0)
-      .attr("dy",function(d){
-          if(d.name[0]=='P') return 0;
-          else return 0;
+      .attr('stroke', '#00000000')
+      .attr("dx", function(d){
+        if(d.name[0]=='P') return 20;
+        else return 12;
       })
-      .attr('stroke', function(d){
+      .attr("dy",function(d){
+          if(d.name[0]=='P') return 5;
+          else return 5;
+      })
+      .attr('fill', function(d){
           if(d.name[0]=='P') return 'black';
           else return 'red';
       })
@@ -388,7 +395,28 @@ function zoom_actions(){
     g.attr("transform", d3.event.transform)
 }
 
+function onClick()
+{
+    node.selectAll('circle')
+    .attr('fill', function(d)
+      {
+        if(d.name[0]=='P') return '#00000000';
+        else return '#FF111199';
+      })
+    .attr('stroke', function(d)
+      {
+        if(d.name[0]=='P') return '#00000099';
+        else return '#00000000';
+      });
 
+    node.selectAll('text')
+    .attr('fill', function(d)
+      {
+        if(d.name[0]=='P') return '#00000099';
+        else return '#FF111199';
+      });
+
+}
 
 
 
