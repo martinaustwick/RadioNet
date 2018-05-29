@@ -26,6 +26,9 @@
 
 var width = 960,
     height = 500;
+
+    var deselectAlpha = '20';
+
 var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height)
@@ -45,7 +48,8 @@ var links = [];
 
 //add encompassing group for the zoom 
 var g = svg.append("g")
-    .attr("class", "everything");
+    .attr("class", "everything")
+    ;
 
 d3.csv("data/producers_mod.csv", function(error, reccs) {
   if (error) throw error;
@@ -189,13 +193,13 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
       var s= nodeByNode2(recc, recc.id);
       console.log(s);
       var t = nodeByName(recc.producer_id);
-      if(t.name.length>0)links.push({source: s, target: t, weight:2});
+      if(t.name.length>0)links.push({source: s, target: t, weight:1.5});
 
       t = nodeByName(recc.producer_2_id);
-      if(t.name.length>0)links.push({source: s, target: t, weight:2});
+      if(t.name.length>0)links.push({source: s, target: t, weight:1.5});
 
       t = nodeByName(recc.producer_3_id);
-      if(t.name.length>0)links.push({source: s, target: t, weight:2});
+      if(t.name.length>0)links.push({source: s, target: t, weight:1.5});
     }
 
   });
@@ -204,6 +208,7 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
   // Extract the array of nodes from the map by name.
   //key/value pair is the context?
   var nodes = d3.values(nodesByName);
+
   //console.log(nodes);
   // Create the link lines.
   var link = //svg.selectAll(".link")
@@ -214,7 +219,7 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
     .enter().append("line")
       .attr("class", "link")
       .style("stroke", function(d){
-        if(d.source.name[0]=='P') return 'black';
+        if(d.source.name[0]=='P') return 'blue';
         //else return '#FF111100'; 
         else return 'red';
       })
@@ -235,6 +240,10 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
       .attr("class", "node");
       //.call(force.drag);
 
+      svg.on("click", function(){
+        if(!d3.select(this).classed('circle')) console.log(this); 
+      });
+
   node.append("circle")
     .attr("r", function(d)
       {
@@ -243,27 +252,25 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
       })
     .attr('fill', function(d)
       {
-        if(d.name[0]=='P') return '#00000000';
+        if(d.name[0]=='P') return '#0011FF';
         else return '#FF1111';
       })
-    .attr('stroke', function(d)
-      {
-        if(d.name[0]=='P') return 'black';
-        else return '#00000000';
-      })
+    .attr('stroke', "#FFFFFF55")
     .on("click", function(d){
-        //this.attr("fill", "black");
-        //onClick();
-        //console.log(d);
+        var origin = d.name;
+        onClick(origin);
       }
-      );
+      )
+      ;
+
+      
 
    node.append("text")
       .style("font-size", 20)
       .attr('stroke', '#00000000')
       .attr("dx", function(d){
-        if(d.name[0]=='P') return 20;
-        else return 12;
+        if(d.name[0]=='P') return 25;
+        else return 15;
       })
       .attr("dy",function(d){
           if(d.name[0]=='P') return 5;
@@ -278,6 +285,7 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
          else return d.name
       });
 
+ 
   // Start the force layout.
   // force
   //     .nodes(nodes)
@@ -395,26 +403,75 @@ function zoom_actions(){
     g.attr("transform", d3.event.transform)
 }
 
-function onClick()
+function onClick(or)
 {
+    var listOfNodes = [];
+
+    link
+    .style('stroke', function(d){
+        var alpha = '55';
+        if(d.source.name==or || d.target.name==or) 
+         {
+          alpha="FF";
+          listOfNodes.push(d.source.name);
+          listOfNodes.push(d.target.name);
+        }
+        if(d.source.name[0]=='P') return '#0011FF'+alpha;
+        else return '#FF1111'+alpha;
+      })
+    .style("stroke-width",function(d)
+      {
+        var w = 1;
+        if(d.source.name[0]=='A') w+=3;
+        if(d.source.name==or || d.target.name==or) w*=2
+        return w;
+      })
+    ;
+
+    console.log(listOfNodes);
+
+
     node.selectAll('circle')
     .attr('fill', function(d)
       {
-        if(d.name[0]=='P') return '#00000000';
-        else return '#FF111199';
+        var alpha = deselectAlpha;
+
+        if(d.name==or) alpha="FF";
+        else if(listOfNodes.indexOf(d.name)>-1) alpha = 'CC';
+
+        if(d.name[0]=='P') return '#0011FF'+alpha;
+        else return '#FF1111'+alpha;
       })
-    .attr('stroke', function(d)
-      {
-        if(d.name[0]=='P') return '#00000099';
-        else return '#00000000';
-      });
+    // .attr('stroke', function(d)
+    //   {
+    //     if(d.name==or) return "black";
+    //     else return "#00000000";
+    //   })
+    ;
 
     node.selectAll('text')
     .attr('fill', function(d)
       {
-        if(d.name[0]=='P') return '#00000099';
-        else return '#FF111199';
+        var alpha = deselectAlpha;
+        if(d.name==or) alpha="FF";
+        else if(listOfNodes.indexOf(d.name)>-1) alpha = 'CC';
+
+        if(d.name[0]=='P') return '#0011FF'+alpha;
+        else return '#FF1111'+alpha;
+
+        // var textCol = "#FF111155";
+        // if(d.name[0]=='P'){
+        //   textCol = '#00000055';
+        //   if(d.name==or) textCol = "black";
+        // } 
+        // else
+        // {
+        //   if(d.name==or) textCol = "red";
+        // }
+        // return textCol;
       });
+
+    
 
 }
 
