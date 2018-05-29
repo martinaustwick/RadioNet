@@ -166,12 +166,6 @@ d3.csv("data/producers_mod.csv", function(error, reccs) {
 
 
 
-
-
-
-
-
-
 d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
   if (error) throw error;
 
@@ -240,8 +234,8 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
       .attr("class", "node");
       //.call(force.drag);
 
-      svg.on("click", function(){
-        if(!d3.select(this).classed('circle')) console.log(this); 
+  svg.on("click", function(){
+        onClick(-1);
       });
 
   node.append("circle")
@@ -257,8 +251,11 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
       })
     .attr('stroke', "#FFFFFF55")
     .on("click", function(d){
+        console.log("xircle");
+        d3.event.stopPropagation();
         var origin = d.name;
         onClick(origin);
+        //console.log(d3.event.target.id);
       }
       )
       ;
@@ -277,8 +274,8 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
           else return 5;
       })
       .attr('fill', function(d){
-          if(d.name[0]=='P') return 'black';
-          else return 'red';
+          if(d.name[0]=='P') return '#0011FF';
+          else return '#FF1111';
       })
       .text(function(d) { 
          if(d.node) return d.node.name
@@ -372,8 +369,8 @@ drag_handler(node);
 //add zoom capabilities 
 var zoom_handler = d3.zoom()
     .on("zoom", zoom_actions);
-
-zoom_handler(svg);     
+zoom_handler(svg);
+zoom_handler.scaleTo(svg, 0.5);
 
 /** Functions **/
 
@@ -410,12 +407,14 @@ function onClick(or)
     link
     .style('stroke', function(d){
         var alpha = '55';
-        if(d.source.name==or || d.target.name==or) 
+        
+        if(d.source.name==or || d.target.name==or || or<0)
          {
           alpha="FF";
           listOfNodes.push(d.source.name);
           listOfNodes.push(d.target.name);
         }
+        
         if(d.source.name[0]=='P') return '#0011FF'+alpha;
         else return '#FF1111'+alpha;
       })
@@ -428,9 +427,7 @@ function onClick(or)
       })
     ;
 
-    console.log(listOfNodes);
-
-
+   
     node.selectAll('circle')
     .attr('fill', function(d)
       {
@@ -459,16 +456,6 @@ function onClick(or)
         if(d.name[0]=='P') return '#0011FF'+alpha;
         else return '#FF1111'+alpha;
 
-        // var textCol = "#FF111155";
-        // if(d.name[0]=='P'){
-        //   textCol = '#00000055';
-        //   if(d.name==or) textCol = "black";
-        // } 
-        // else
-        // {
-        //   if(d.name==or) textCol = "red";
-        // }
-        // return textCol;
       });
 
     
