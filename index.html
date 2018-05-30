@@ -213,7 +213,7 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
     .enter().append("line")
       .attr("class", "link")
       .style("stroke", function(d){
-        if(d.source.name[0]=='P') return 'blue';
+        if(d.source.name[0]=='P') return '#00000000';
         //else return '#FF111100'; 
         else return 'red';
       })
@@ -407,15 +407,20 @@ function onClick(or)
     link
     .style('stroke', function(d){
         var alpha = '55';
-        
+
         if(d.source.name==or || d.target.name==or || or<0)
          {
           alpha="FF";
           listOfNodes.push(d.source.name);
           listOfNodes.push(d.target.name);
         }
+
         
-        if(d.source.name[0]=='P') return '#0011FF'+alpha;
+        if(d.source.name[0]=='P'){
+          if(d.source.name==or || d.target.name==or) alpha = "FF";
+          else alpha = "00";
+          return '#0011FF'+alpha;
+        }
         else return '#FF1111'+alpha;
       })
     .style("stroke-width",function(d)
