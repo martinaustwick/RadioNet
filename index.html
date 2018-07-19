@@ -18,7 +18,7 @@
 <body>
 <script type="text/javascript" src="d3.v4.min.js"></script>
 <!--script src="https://d3js.org/d3.v4.min.js"></script-->
-
+ <!--script type='text/javascript' src="./word_wrap.js"></script-->
 
 <script>
 
@@ -47,10 +47,77 @@ var links = [];
 //d3.csv("graph.csv", function(error, links) {
 
 //add encompassing group for the zoom 
+
+
+    //
+
+
+var textWidth = 300;
+var textHeight = 400;
+
+// function wrap(text, width) {
+//   text.each(function() {
+//     var text = d3.select(this),
+//         words = text.text().split(/\s+/).reverse(),
+//         word,
+//         line = [],
+//         lineNumber = 0,
+//         lineHeight = 1.1, // ems
+//         y = text.attr("y"),
+//         dy = parseFloat(text.attr("dy")),
+//         tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
+//     while (word = words.pop()) {
+//       line.push(word);
+//       tspan.text(line.join(" "));
+//       if (tspan.node().getComputedTextLength() > width) {
+//         line.pop();
+//         tspan.text(line.join(" "));
+//         line = [word];
+//         tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+//       }
+//     }
+//   });
+//   }
+
+
+
+var testText = ["Intro from Jeff Towne: We all know the experience - listening to the radio or watching TV, a loud commercial jumps out, sending you grabbing for the volume control. Or conversely, your favorite program is too quiet leading you to crank up the volume, even though you know louder levels will startle you as the next program starts. Variations in program levels have been a problem for public radio stations, and now the public radio world is attempting to even out this difference by implementing a new loudness standard. Adhering to this standard will soon be required when submitting programs to the Public Radio Satellite System’s ContentDepot, PRX, and other organizations, and it's also just a good tool for making sure your mixes keep a steady level. Rob Byers tells us about the concept of Loudness, and how to use it to create better mixes that are both internally consistent and compatible with other programs in the public radio system."];
+//var testText2 = "why n is it so hard?";
+
+//courtesy Mike Bostock:
+function wrap(text, width) {
+  text.each(function() {
+    var text = d3.select(this),
+        words = text.text().split(/\s+/).reverse(),
+        word,
+        line = [],
+        lineNumber = 0,
+        lineHeight = 1.1, // ems
+        y = text.attr("y"),
+        dy = parseFloat(text.attr("dy")),
+        tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
+    while (word = words.pop()) {
+      line.push(word);
+      tspan.text(line.join(" "));
+      if (tspan.node().getComputedTextLength() > width) {
+        line.pop();
+        tspan.text(line.join(" "));
+        line = [word];
+        tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+      }
+    }
+  });
+}
+
+
+
+
+    //
+
+
 var g = svg.append("g")
     .attr("class", "everything")
     ;
-
 d3.csv("data/producers_mod.csv", function(error, reccs) {
   if (error) throw error;
 
@@ -338,6 +405,25 @@ simulation.on("tick", tick );
   }
   //node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
   
+//>>>legend/labels
+var legend = svg.append("g");
+
+legend.append("rect")
+    .attr("width", textWidth)
+    .attr("height", textHeight - 1)
+    .attr("fill", "white");
+
+var legendText = legend.append("text")
+    .data(testText)
+    .attr("x", 30)
+    .attr("y", 20)
+    .attr("dx", 0)
+    .attr("dy", 0)
+    .text(testText)
+    .call(wrap, textWidth);
+
+
+
 
   function nodeByName(name) {
     return nodesByName[name] || (nodesByName[name] = {name: name});
@@ -407,7 +493,9 @@ function onClick(or)
     link
     .style('stroke', function(d){
         var alpha = '55';
+        //console.log(d.source.node);
 
+        //make links to and from the clicked node more opaque
         if(d.source.name==or || d.target.name==or || or<0)
          {
           alpha="FF";
@@ -415,7 +503,14 @@ function onClick(or)
           listOfNodes.push(d.target.name);
         }
 
-        
+
+        ///set text
+        if(d.source.name==or) {
+          console.log(d.source.node);
+          legendText.text(d.source.node.bio).data(d.source.node.bio).call(wrap, textWidth);
+        }
+
+        //producer and audio colour if
         if(d.source.name[0]=='P'){
           if(d.source.name==or || d.target.name==or) alpha = "FF";
           else alpha = "00";
@@ -432,6 +527,7 @@ function onClick(or)
       })
     ;
 
+
    
     node.selectAll('circle')
     .attr('fill', function(d)
@@ -443,6 +539,11 @@ function onClick(or)
 
         if(d.name[0]=='P') return '#0011FF'+alpha;
         else return '#FF1111'+alpha;
+
+        ///set text
+        // if(d.name==or) {
+        //   console.log(d.name);
+        // }
       })
     // .attr('stroke', function(d)
     //   {
