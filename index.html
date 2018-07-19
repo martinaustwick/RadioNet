@@ -9,16 +9,11 @@
 }
 
 
-/*.node text {
-  pointer-events: none;
-  font: 10px sans-serif;
-}*/
 </style>
 
 <body>
 <script type="text/javascript" src="d3.v4.min.js"></script>
-<!--script src="https://d3js.org/d3.v4.min.js"></script-->
- <!--script type='text/javascript' src="./word_wrap.js"></script-->
+
 
 <script>
 
@@ -99,7 +94,7 @@ function wrap(text, width) {
     while (word = words.pop()) {
       line.push(word);
       tspan.text(line.join(" "));
-      if (tspan.node().getComputedTextLength() > (width-text.attr("dx"))) {
+      if (tspan.node().getComputedTextLength() > (width-2*text.attr("dx"))) {
         line.pop();
         tspan.text(line.join(" "));
         line = [word];
@@ -118,7 +113,7 @@ function wrap(text, width) {
 var g = svg.append("g")
     .attr("class", "everything")
     ;
-d3.csv("data/producers_mod.csv", function(error, reccs) {
+d3.csv("data/producers2.csv", function(error, reccs) {
   if (error) throw error;
 
   //console.log(links);
@@ -132,6 +127,7 @@ d3.csv("data/producers_mod.csv", function(error, reccs) {
 
     //currently bypassing this logic
     var noTarget = false;
+    //was target
     if(recc.target.length>0) noTarget = false;
     if(recc.recomends_2.length>0) noTarget = false;
     if(recc.recomends_3.length>0) noTarget = false;
@@ -142,8 +138,8 @@ d3.csv("data/producers_mod.csv", function(error, reccs) {
     {
       var s= nodeByNode(recc, recc.source);
       //console.log(s);
+      //was target
       var t = nodeByName(recc.target);    
-      
       if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
       t = nodeByName(recc.recomends_2);
       if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
@@ -406,6 +402,7 @@ simulation.on("tick", tick );
   //node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
   
 //>>>legend/labels
+//append("div").attr("overflow", "scroll").
 var legend = svg.append("g");
 
 legend.append("rect")
@@ -493,7 +490,7 @@ function onClick(or)
 {
     var listOfNodes = [];
 
-    legend.selectAll("rect").transition().attr("height", 50);
+    legend.selectAll("rect").transition().duration(1000).attr("height", 50);
     legendText.text("RadioNet").data("RadioNet").call(wrap, textWidth);
 
 
@@ -534,14 +531,15 @@ function onClick(or)
 
     node.each(function(d){
       if(d.name==or) {
-         //console.log(d.node.description.length);
-         var info = d.node.name + " :                            ";
+         console.log(d.node.bio);
+         //consistent URL naming
+         var info = d.node.name + " : ";
         if(d.name[0]=='P' && d.node.bio.length>0) info = info + d.node.bio;
         if(d.name[0]=='A' && d.node.description.length>0) info = info + d.node.description;
 
-        legendText.text(info).data(info).call(wrap, textWidth)
-
-        legend.selectAll("rect").transition().attr("height", height);
+        legend.selectAll("text").text(info).data(info).call(wrap, textWidth).transition();
+        //console.log(legendText.text().selectAll("tspan"));
+        legend.selectAll("rect").transition().duration(1000).attr("height", height);
 
         }
     });
