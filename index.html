@@ -113,7 +113,7 @@ function wrap(text, width) {
 var g = svg.append("g")
     .attr("class", "everything")
     ;
-d3.csv("data/producers2.csv", function(error, reccs) {
+d3.csv("data/producers50.csv", function(error, reccs) {
   if (error) throw error;
 
   //console.log(links);
@@ -126,28 +126,33 @@ d3.csv("data/producers2.csv", function(error, reccs) {
     //link.target = nodeByName(link.target);
 
     //currently bypassing this logic
-    var noTarget = false;
-    //was target
-    if(recc.target.length>0) noTarget = false;
-    if(recc.recomends_2.length>0) noTarget = false;
-    if(recc.recomends_3.length>0) noTarget = false;
-    if(recc.recomends_4.length>0) noTarget = false;
-    if(recc.recomends_5.length>0) noTarget = false;
+     var noTarget = false;
+    // //was target
+    // if(recc.target.length>0) noTarget = false;
+    // if(recc.recomends_2.length>0) noTarget = false;
+    // if(recc.recomends_3.length>0) noTarget = false;
+    // if(recc.recomends_4.length>0) noTarget = false;
+    //if(recc.recomends_5.length>0) noTarget = false;
 
     if(!noTarget)
     {
-      var s= nodeByNode(recc, recc.source);
-      //console.log(s);
+      //console.log(recc.id);
+      var s= nodeByNode(recc, recc.id);
+      
       //was target
-      var t = nodeByName(recc.target);    
+      var t = nodeByName(recc.recommends_1);    
+      console.log(t);
       if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
-      t = nodeByName(recc.recomends_2);
+
+      t = nodeByName(recc.recommends_2);
       if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
-      t = nodeByName(recc.recomends_3);
+      t = nodeByName(recc.recommends_3);
+      console.log(t);
       if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
-      t = nodeByName(recc.recomends_4);
+      t = nodeByName(recc.recommends_4);
+      console.log(t);
       if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
-      t = nodeByName(recc.recomends_5);
+      t = nodeByName(recc.recommends_5);
       if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
     }
     //link.id = nodeByName(link.id);
@@ -210,16 +215,16 @@ d3.csv("data/producers2.csv", function(error, reccs) {
   //node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
   
 
-  function nodeByName(name) {
-    return nodesByName[name] || (nodesByName[name] = {name: name});
+  function nodeByName(identifier) {
+    return nodesByName[identifier] || (nodesByName[identifier] = {name: identifier});
   }
 
 
 
-  function nodeByNode(node, name) {
+  function nodeByNode(node, identifier) {
     //console.log(nodesByName[name]);
-    if(!nodesByName[name]) nodesByName[name] = {name: name, node: node};
-    return nodesByName[name];
+    if(!nodesByName[identifier]) nodesByName[identifier] = {name: identifier, node: node};
+    return nodesByName[identifier];
     
   }
 });
@@ -248,7 +253,7 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
     {
       //var s= nodeByName(recc.id);
       var s= nodeByNode2(recc, recc.id);
-      console.log(s);
+      //console.log(s);
       var t = nodeByName(recc.producer_id);
       if(t.name.length>0)links.push({source: s, target: t, weight:1.5});
 
@@ -276,7 +281,9 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
     .enter().append("line")
       .attr("class", "link")
       .style("stroke", function(d){
+        //console.log(d.id.name);
         if(d.source.name[0]=='P') return '#00000000';
+        //if(d.id.name[0]=='P') return '#00000000';
         //else return '#FF111100'; 
         else return 'red';
       })
@@ -314,7 +321,7 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
       })
     .attr('stroke', "#FFFFFF55")
     .on("click", function(d){
-        console.log("xircle");
+        //console.log("xircle");
         d3.event.stopPropagation();
         var origin = d.name;
         onClick(origin);
@@ -531,7 +538,7 @@ function onClick(or)
 
     node.each(function(d){
       if(d.name==or) {
-         console.log(d.node.bio);
+         //console.log(d.node.bio);
          //consistent URL naming
          var info = d.node.name + " : ";
         if(d.name[0]=='P' && d.node.bio.length>0) info = info + d.node.bio;
