@@ -50,33 +50,6 @@ var links = [];
 var textWidth = 300;
 var textHeight = 400;
 
-// function wrap(text, width) {
-//   text.each(function() {
-//     var text = d3.select(this),
-//         words = text.text().split(/\s+/).reverse(),
-//         word,
-//         line = [],
-//         lineNumber = 0,
-//         lineHeight = 1.1, // ems
-//         y = text.attr("y"),
-//         dy = parseFloat(text.attr("dy")),
-//         tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
-//     while (word = words.pop()) {
-//       line.push(word);
-//       tspan.text(line.join(" "));
-//       if (tspan.node().getComputedTextLength() > width) {
-//         line.pop();
-//         tspan.text(line.join(" "));
-//         line = [word];
-//         tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
-//       }
-//     }
-//   });
-//   }
-
-
-
-// var testText = ["Intro from Jeff Towne: We all know the experience - listening to the radio or watching TV, a loud commercial jumps out, sending you grabbing for the volume control. Or conversely, your favorite program is too quiet leading you to crank up the volume, even though you know louder levels will startle you as the next program starts. Variations in program levels have been a problem for public radio stations, and now the public radio world is attempting to even out this difference by implementing a new loudness standard. Adhering to this standard will soon be required when submitting programs to the Public Radio Satellite System’s ContentDepot, PRX, and other organizations, and it's also just a good tool for making sure your mixes keep a steady level. Rob Byers tells us about the concept of Loudness, and how to use it to create better mixes that are both internally consistent and compatible with other programs in the public radio system."];
 var testText = "RadioNet";
 
 //courtesy Mike Bostock:
@@ -113,113 +86,61 @@ function wrap(text, width) {
 var g = svg.append("g")
     .attr("class", "everything")
     ;
-d3.csv("data/producers50.csv", function(error, reccs) {
-  if (error) throw error;
 
-  //console.log(links);
+//create nodes and links from producers table
+d3.csv("data/producers50.csv", function(error, reccs) {
+  if (error) {
+    console.log("import error");
+    throw error;
+  }
+
 
   
 
   reccs.forEach(function(recc) {
-    //the method removes redundancy
-    //link.source = nodeByName(link.source);
-    //link.target = nodeByName(link.target);
 
-    //currently bypassing this logic
-     var noTarget = false;
-    // //was target
-    // if(recc.target.length>0) noTarget = false;
-    // if(recc.recomends_2.length>0) noTarget = false;
-    // if(recc.recomends_3.length>0) noTarget = false;
-    // if(recc.recomends_4.length>0) noTarget = false;
-    //if(recc.recomends_5.length>0) noTarget = false;
+    //currently using this logic, which excludes orphan (unconnected) nodes
+    var noTarget = true;
+    if(recc.recommends_1.length>0) noTarget = false;
+    if(recc.recommends_2.length>0) noTarget = false;
+    if(recc.recommends_3.length>0) noTarget = false;
+    if(recc.recommends_4.length>0) noTarget = false;
+    if(recc.recommends_5.length>0) noTarget = false;
+
+    //var s= nodeByNode(recc, recc.id);
 
     if(!noTarget)
     {
       //console.log(recc.id);
       var s= nodeByNode(recc, recc.id);
-      
+     
       //was target
       var t = nodeByName(recc.recommends_1);    
-      console.log(t);
+      //console.log(t);
       if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
 
       t = nodeByName(recc.recommends_2);
       if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
+
       t = nodeByName(recc.recommends_3);
-      console.log(t);
+      //console.log(t);
       if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
+
       t = nodeByName(recc.recommends_4);
-      console.log(t);
+      //console.log(t);
       if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
+
       t = nodeByName(recc.recommends_5);
       if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
     }
-    //link.id = nodeByName(link.id);
-    //link.broadcaster_id = nodeByName(link.broadcaster_id);
+  
   });
 
-  //console.log(links);
-  // Extract the array of nodes from the map by name.
-  //key/value pair is the context?
-  // var nodes = d3.values(nodesByName);
-  // console.log(nodes);
-  // // Create the link lines.
-  // var link = svg.selectAll(".link")
-  //     .data(links)
-  //   .enter().append("line")
-  //     .attr("class", "link")
-  //     .style("stroke", function(d){
-  //       if(d.source.name[0]=='P') return 'black';
-  //       else return 'blue';
-  //     });
-  // // Create the node circles.
-  // var node = svg.selectAll(".node")
-  //     .data(nodes)
-  //   .enter().append("g")
-  //     .attr("class", "node")
-  //     .call(force.drag);
 
-  // node.append("circle").attr("r", 4.5)
-  //   .attr('fill', function(d)
-  //     {
-  //       if(d.name[0]=='P') return 'black';
-  //       else return 'blue';
-  //     });
-
-  //  node.append("text")
-  //     //.attr("dx", 12)
-  //     // .attr("dy", ".35em")
-  //     .attr('stroke', 'black')
-  //     .text(function(d) { return d.name });
-
-  // // Start the force layout.
-  // force
-  //     .nodes(nodes)
-  //     .links(links)
-  //     .on("tick", tick)
-  //     .linkDistance(20)
-  //     .charge(-50)
-  //     .start();
-
-  // function tick() {
-  //   link.attr("x1", function(d) { return d.source.x; })
-  //       .attr("y1", function(d) { return d.source.y; })
-  //       .attr("x2", function(d) { return d.target.x; })
-  //       .attr("y2", function(d) { return d.target.y; });
-  //   node.attr("cx", function(d) { return d.x; })
-  //       .attr("cy", function(d) { return d.y; });
-
-  //   node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
-  // }
-  //node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
-  
 
   function nodeByName(identifier) {
     return nodesByName[identifier] || (nodesByName[identifier] = {name: identifier});
   }
-
-
 
   function nodeByNode(node, identifier) {
     //console.log(nodesByName[name]);
@@ -230,21 +151,14 @@ d3.csv("data/producers50.csv", function(error, reccs) {
 });
 
 
-
-
-
-
+//create nodes and links from 
 d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
   if (error) throw error;
 
-  //console.log(links);
 
   reccs.forEach(function(recc) {
-    //the method removes redundancy
-    //link.source = nodeByName(link.source);
-    //link.target = nodeByName(link.target);
 
-    var noTarget = false;
+    var noTarget = true;
     if(recc.producer_id.length>0) noTarget = false;
     if(recc.producer_2_id.length>0) noTarget = false;
     if(recc.producer_3_id.length>0) noTarget = false;
@@ -266,12 +180,10 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
 
   });
 
-  //console.log(links);
   // Extract the array of nodes from the map by name.
   //key/value pair is the context?
   var nodes = d3.values(nodesByName);
 
-  //console.log(nodes);
   // Create the link lines.
   var link = //svg.selectAll(".link")
       g.append("g")
@@ -294,6 +206,7 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
 
       })
       ;
+
   // Create the node circles.
   var node = //svg.selectAll(".node")
       g.append("g")
@@ -352,6 +265,7 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
          else return d.name
       });
 
+      
  
   // Start the force layout.
   // force
@@ -374,10 +288,13 @@ var link_force =  d3.forceLink(links)
                         .id(function(d) { return d.name; })
                         .distance(40)
                         .strength(function(d){return d.weight;})
+                        //strength(1)
                         ;            
          
 var charge_force = d3.forceManyBody()
-    .strength(-450); 
+    .strength(-450)
+    //.strength(-1)
+    ; 
     
 var center_force = d3.forceCenter(width / 2, height / 2);  
 
@@ -386,26 +303,71 @@ simulation
     .force("charge_force", charge_force)
     .force("center_force", center_force)
     .force("links",link_force)
-    .force("x_force", d3.forceX(width/2).strength(0.03))
-    .force("y_force", d3.forceY(height/2).strength(0.05))
+    .force("x_force", d3.forceX(width/2)
+      .strength(0.03)
+      )
+    .force("y_force", d3.forceY(height/2)
+      .strength(0.05)
+      )
     .alpha(0.8)
     .alphaDecay(0.001)
  ;
 
+// node.each(function(d, i) {
+//         d.x = d.y = i;
+//       });
+
+
+//code to hard fix some of the NaNs
+link.each(function(d){
+  d.source.x = 10;
+  d.source.y = 10;
+  d.target.x = 10;
+  d.target.y = 10;
+});
+
+link
+        .attr("x1", 10 )
+        .attr("x1", 10 )
+        .attr("y1", 20 )
+        .attr("x2", 20 )
+        .attr("y2", 20 );
+node.attr("transform", function(d) { return "translate(" + 10 + "," + 10 + ")"; });
         
+var iteration = 0;
+
 //add tick instructions: 
 simulation.on("tick", tick );
-
+  //console.log(iteration);
   function tick() {
-    link.attr("x1", function(d) { return d.source.x; })
+    positions = [];
+
+    //console.log("positions");  
+    link
+        .attr("x1", function(d) { 
+          //console.log(d.source.x); 
+          return d.source.x; 
+        })
         .attr("y1", function(d) { return d.source.y; })
         .attr("x2", function(d) { return d.target.x; })
         .attr("y2", function(d) { return d.target.y; });
+    
+      
+    //console.log(positions);
+
+
     node.attr("cx", function(d) { return d.x; })
         .attr("cy", function(d) { return d.y; });
 
+
+
     node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+    //node.attr("transform", function(d) { return "translate(" + 30 + "," + 30 + ")"; });
+
+    iteration++;
   }
+
+
   //node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
   
 //>>>legend/labels
