@@ -558,6 +558,7 @@ function zoom_actions(){
       .style('stroke', function(d){
           var alpha = '55';
           //make links to and from the clicked node more opaque
+          
           if(d.source.id==or || d.target.id==or || or<0)
            {
             alpha="FF";            
@@ -565,23 +566,17 @@ function zoom_actions(){
             listOfNodes.push(d.target.id);
           }
 
-          ///set text
-          // if(d.source.name==or) {
-          //   console.log(d.source.node);
-          //   legendText.text(d.source.node.bio).data(d.source.node.bio).call(wrap, textWidth);
-          // }
-
           //producer and audio colour if
           if(d.source.id[0]=='P'){
             if(d.source.id==or || d.target.id==or) alpha = "FF";
-            else alpha = "00";
+            else if(or<0) alpha = "00";
             return '#0011FF'+alpha;
           }
           else return '#FF1111'+alpha;
         })
       .style("stroke-width",function(d)
         {
-          var w = 1;
+          var w = 2;
           if(d.source.id[0]=='A') w+=3;
           if(d.source.id==or || d.target.id==or) w*=2
           return w;
@@ -599,8 +594,9 @@ function zoom_actions(){
           legend.selectAll("text").text(info).data(info).call(wrap, textWidth).transition();
           //console.log(legendText.text().selectAll("tspan"));
           legend.selectAll("rect").transition().duration(1000).attr("height", height);
-
+          //zoom_handler.translateBy(svg, (width/2)-d.node.x, (height/2)-d.node.y);
           }
+
       });
      
       node.selectAll('circle')
