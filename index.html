@@ -93,7 +93,7 @@ function wrap(text, width) {
     */
 
     //checks the name entry exists
-    if(!nodesByName[name]) nodesByName[name] = {name: name, node:node};
+    if(!nodesByName[name]) nodesByName[name] = {id: name, node:node};
     //checks the entry has a node!
     if(!nodesByName[name].node) nodesByName[name].node = node;
     //nodesByName[name] = {name: name, node:node};
@@ -134,23 +134,23 @@ d3.csv("data/producers50.csv", function(error, reccs) {
     //     var s= nodeByNode(recc, recc.id);
        
     //     //was target
-    //     var t = nodeByName(recc.recommends_1);    
-    //     //console.log(t);
-    //     if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
+        // var t = nodeByName(recc.recommends_1);    
+        // //console.log(t);
+        // if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
 
-    //     t = nodeByName(recc.recommends_2);
-    //     if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
+        // t = nodeByName(recc.recommends_2);
+        // if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
 
-    //     t = nodeByName(recc.recommends_3);
-    //     //console.log(t);
-    //     if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
+        // t = nodeByName(recc.recommends_3);
+        // //console.log(t);
+        // if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
 
-    //     t = nodeByName(recc.recommends_4);
-    //     //console.log(t);
-    //     if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
+        // t = nodeByName(recc.recommends_4);
+        // //console.log(t);
+        // if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
 
-    //     t = nodeByName(recc.recommends_5);
-    //     if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
+        // t = nodeByName(recc.recommends_5);
+        // if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
     //   }
 
 
@@ -178,7 +178,7 @@ d3.csv("data/audio1.csv", function(error, reccs) {
 
 
   reccs.forEach(function(recc) {
-
+  //create all nodes that have a name, not just ID
     if(recc.name.length>0) var s= nodeByNode(recc, recc.id);
 
   //   var noTarget = true;
@@ -189,17 +189,17 @@ d3.csv("data/audio1.csv", function(error, reccs) {
     
   //   if(!noTarget)
   //   {
-  //     //var s= nodeByName(recc.id);
-  //     var s= nodeByNode(recc, recc.id);
-  //     //console.log(s);
-  //     var t = nodeByName(recc.producer_id);
-  //     if(t.name.length>0)links.push({source: s, target: t, weight:1.5});
+      //var s= nodeByName(recc.id);
+      // var s= nodeByNode(recc, recc.id);
+      // //console.log(s);
+      // var t = nodeByName(recc.producer_id);
+      // if(t.name.length>0)links.push({source: s, target: t, weight:1.5});
 
-  //     t = nodeByName(recc.producer_2_id);
-  //     if(t.name.length>0)links.push({source: s, target: t, weight:1.5});
+      // t = nodeByName(recc.producer_2_id);
+      // if(t.name.length>0)links.push({source: s, target: t, weight:1.5});
 
-  //     t = nodeByName(recc.producer_3_id);
-  //     if(t.name.length>0)links.push({source: s, target: t, weight:1.5});
+      // t = nodeByName(recc.producer_3_id);
+      // if(t.name.length>0)links.push({source: s, target: t, weight:1.5});
   //   }
    });
 
@@ -212,57 +212,49 @@ d3.csv("data/audio1.csv", function(error, reccs) {
 
 function setLinks()
 {
-    //console.log(nodesByName);
+    links = [];
+    console.log(nodesByName);
     for(var s in nodesByName){
-      //console.log(key);
-      //console.log(nodesByName[key].node);
+      
       var currentNode = nodesByName[s].node;
       if(s[0]=='P')
       {
             var t = currentNode.recommends_1;    
-             if(t.length>0)links.push({source: s, target: t, weight:0.1});
-             //console.log(currentNode);
+            if(t.length>0) if(nodesByName[t]) links.push({"source": s, "target": t, "weight":0.1});
+            
+            t = currentNode.recommends_2;    
+            if(t.length>0) if(nodesByName[t]) links.push({"source": s, "target": t, "weight":0.1});
+            t = currentNode.recommends_3;    
+            if(t.length>0) if(nodesByName[t]) links.push({"source": s, "target": t, "weight":0.1});
+            t = currentNode.recommends_4;    
+            if(t.length>0) if(nodesByName[t]) links.push({"source": s, "target": t, "weight":0.1});
+            t = currentNode.recommends_5;    
+            if(t.length>0) if(nodesByName[t]) links.push({"source": s, "target": t, "weight":0.1});
 
-             t = currentNode.recommends_2;    
-             if(t.length>0)links.push({source: s, target: t, weight:0.1});
-             t = currentNode.recommends_3;    
-             if(t.length>0)links.push({source: s, target: t, weight:0.1});
-             t = currentNode.recommends_4;    
-             if(t.length>0)links.push({source: s, target: t, weight:0.1});
-             t = currentNode.recommends_5;    
-             if(t.length>0)links.push({source: s, target: t, weight:0.1});
-
-
-    //     t = nodeByName(recc.recommends_2);
-    //     if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
-
-    //     t = nodeByName(recc.recommends_3);
-    //     //console.log(t);
-    //     if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
-
-    //     t = nodeByName(recc.recommends_4);
-    //     //console.log(t);
-    //     if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
-
-    //     t = nodeByName(recc.recommends_5);
-    //     if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
       }
       else
       {
           var t = currentNode.producer_id;
-          // console.log(currentNode);
-          // console.log(s);
-          // console.log(t);
-          if(t.length>0){
-            links.push({source: s, target: t, weight:1.5});
-            //console.log("link created");
-          }
-
+          if(t.length>0) if(nodesByName[t]) links.push({"source": s, "target": t, "weight":1});
           t = currentNode.producer_2_id;
-          if(t.length>0)links.push({source: s, target: t, weight:1.5});
-
+          if(t.length>0) if(nodesByName[t]) links.push({"source": s, "target": t, "weight":1});
           t = currentNode.producer_3_id;
-          if(t.length>0)links.push({source: s, target: t, weight:1.5});
+          if(t.length>0) if(nodesByName[t]) links.push({"source": s, "target": t, "weight":1});
+          //console.log(currentNode);
+          //var t = currentNode.producer_id;
+          // //console.log(currentNode);
+          // //console.log(s);
+          // //console.log(t);
+          // if(t.length>0){
+          //   links.push({source: s, target: t, weight:1.5});
+          //   //console.log("link created");
+          // }
+
+          // t = currentNode.producer_2_id;
+          // if(t.length>0)links.push({source: s, target: t, weight:1.5});
+
+          // t = currentNode.producer_3_id;
+          // if(t.length>0)links.push({source: s, target: t, weight:1.5});
 
           // t = nodeByName(recc.producer_2_id);
           // if(t.name.length>0)links.push({source: s, target: t, weight:1.5});
@@ -271,14 +263,16 @@ function setLinks()
           // if(t.name.length>0)links.push({source: s, target: t, weight:1.5});
       }
     }
-    console.log(links);
-    console.log("links completed");
+    //console.log(links);
+    //console.log("links completed");
 
 }
 
 function drawGraph()
 {
-   console.log("drawing started");
+
+  console.log(links);
+  console.log("drawing started");
 
   //I'm hacking this mf because of its stupid asynchronous load methods 
 //   function sleep(milliseconds) {
@@ -314,7 +308,6 @@ function drawGraph()
     .enter().append("line")
       .attr("class", "link")
       .style("stroke", function(d){
-        //console.log(d);
         if(d.source[0]=='P') return '#00000000';
         //if(d.id.name[0]=='P') return '#00000000';
         //else return '#FF111100'; 
@@ -324,7 +317,6 @@ function drawGraph()
       {
         if(d.source[0]=='P') return 1;
         else return 4;
-
       })
       ;
 
@@ -338,6 +330,7 @@ function drawGraph()
       .attr("class", "node");
       //.call(force.drag);
 
+  //define background click (index -1)
   svg.on("click", function(){
         onClick(-1);
       });
@@ -345,19 +338,19 @@ function drawGraph()
   node.append("circle")
     .attr("r", function(d)
       {
-        if(d.name[0]=='P') return 20;
+        if(d.id[0]=='P') return 20;
         else return 12;
       })
     .attr('fill', function(d)
       {
-        if(d.name[0]=='P') return '#0011FF';
+        if(d.id[0]=='P') return '#0011FF';
         else return '#FF1111';
       })
     .attr('stroke', "#FFFFFF55")
     .on("click", function(d){
         //console.log("xircle");
         d3.event.stopPropagation();
-        var origin = d.name;
+        var origin = d.id;
         onClick(origin);
         //console.log(d3.event.target.id);
       }
@@ -370,15 +363,15 @@ function drawGraph()
       .style("font-size", 20)
       .attr('stroke', '#00000000')
       .attr("dx", function(d){
-        if(d.name[0]=='P') return 25;
+        if(d.id[0]=='P') return 25;
         else return 15;
       })
       .attr("dy",function(d){
-          if(d.name[0]=='P') return 5;
+          if(d.id[0]=='P') return 5;
           else return 5;
       })
       .attr('fill', function(d){
-          if(d.name[0]=='P') return '#0011FF';
+          if(d.id[0]=='P') return '#0011FF';
           else return '#FF1111';
       })
       .text(function(d) { 
@@ -389,13 +382,16 @@ function drawGraph()
    
 var simulation = d3.forceSimulation()
           .nodes(nodes);
-                              
+                         
+console.log(links);
 var link_force =  d3.forceLink(links)
-                        .id(function(d) {return d.name; })
+                        .id(function(d) {return d.id;})
                         .distance(40)
-                        .strength(function(d){return d.weight;})
+                        .strength(function(d){//console.log("weight"); console.log(d.weight);
+                          return d.weight;})
                         //strength(1)
-                        ;            
+                        ;           
+                        //console.log(link_force.data); 
          
 var charge_force = d3.forceManyBody()
     .strength(-450)
@@ -561,13 +557,12 @@ function zoom_actions(){
       link
       .style('stroke', function(d){
           var alpha = '55';
-
           //make links to and from the clicked node more opaque
-          if(d.source.name==or || d.target.name==or || or<0)
+          if(d.source.id==or || d.target.id==or || or<0)
            {
-            alpha="FF";
-            listOfNodes.push(d.source.name);
-            listOfNodes.push(d.target.name);
+            alpha="FF";            
+            listOfNodes.push(d.source.id);
+            listOfNodes.push(d.target.id);
           }
 
           ///set text
@@ -577,8 +572,8 @@ function zoom_actions(){
           // }
 
           //producer and audio colour if
-          if(d.source.name[0]=='P'){
-            if(d.source.name==or || d.target.name==or) alpha = "FF";
+          if(d.source.id[0]=='P'){
+            if(d.source.id==or || d.target.id==or) alpha = "FF";
             else alpha = "00";
             return '#0011FF'+alpha;
           }
@@ -587,19 +582,19 @@ function zoom_actions(){
       .style("stroke-width",function(d)
         {
           var w = 1;
-          if(d.source.name[0]=='A') w+=3;
-          if(d.source.name==or || d.target.name==or) w*=2
+          if(d.source.id[0]=='A') w+=3;
+          if(d.source.id==or || d.target.id==or) w*=2
           return w;
         })
       ;
 
       node.each(function(d){
-        if(d.name==or) {
-           console.log(d.node);
+        if(d.id==or) {
+           console.log(d);
            //consistent URL naming
-           var info = d.node.name + " : ";
-          if(d.name[0]=='P' && d.node.bio.length>0) info = info + d.node.bio;
-          if(d.name[0]=='A' && d.node.description.length>0) info = info + d.node.description;
+          var info = d.node.name + " : ";
+          if(d.id[0]=='P' && d.node.bio.length>0) info = info + d.node.bio;
+          if(d.id[0]=='A' && d.node.description.length>0) info = info + d.node.description;
 
           legend.selectAll("text").text(info).data(info).call(wrap, textWidth).transition();
           //console.log(legendText.text().selectAll("tspan"));
@@ -607,23 +602,18 @@ function zoom_actions(){
 
           }
       });
-
      
       node.selectAll('circle')
       .attr('fill', function(d)
         {
           var alpha = deselectAlpha;
 
-          if(d.name==or) alpha="FF";
-          else if(listOfNodes.indexOf(d.name)>-1) alpha = 'CC';
+          if(d.id==or) alpha="FF";
+          else if(listOfNodes.indexOf(d.id)>-1) alpha = 'CC';
 
-          if(d.name[0]=='P') return '#0011FF'+alpha;
+          if(d.id[0]=='P') return '#0011FF'+alpha;
           else return '#FF1111'+alpha;
 
-          // //set text
-          // if(d.name==or) {
-          //   console.log(d.name);
-          // }
         })
       ;
 
@@ -631,10 +621,10 @@ function zoom_actions(){
       .attr('fill', function(d)
         {
           var alpha = deselectAlpha;
-          if(d.name==or) alpha="FF";
-          else if(listOfNodes.indexOf(d.name)>-1) alpha = 'CC';
+          if(d.id==or) alpha="FF";
+          else if(listOfNodes.indexOf(d.id)>-1) alpha = 'CC';
 
-          if(d.name[0]=='P') return '#0011FF'+alpha;
+          if(d.id[0]=='P') return '#0011FF'+alpha;
           else return '#FF1111'+alpha;
 
         });
