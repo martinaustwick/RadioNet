@@ -469,7 +469,77 @@ simulation.on("tick", tick );
   }
 
 
-  //node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+var legend2 = svg.append("g"); 
+var legend2start = 35;
+var textStart = 42;
+var spacing = 24;
+legend2rect = 
+	legend2.append("rect")
+	.attr("y", legend2start)
+    .attr("width", textWidth)
+    .attr("height", 108)
+    .attr("rx", 15)
+    .attr("ry", 15)
+    .attr("fill", "white")
+    .attr("stroke", "black");
+
+legend2.append("circle")
+	.attr("cx",20)
+	.attr("cy",legend2start+18)
+	.attr("r", 9)
+	.attr("fill", "blue")
+;
+
+legend2.append("text")
+    .data("Producer")
+    .attr("x", textStart)
+    .attr("y", legend2start+22)
+    // .attr("dx", 7)
+    // .attr("dy", 0)
+    .attr("fill", "blue")
+    .text("Producer");
+
+legend2.append("circle")
+	.attr("cx",20)
+	.attr("cy",legend2start+18+spacing)
+	.attr("r", 9)
+	.attr("fill", "red")
+;
+
+legend2.append("text")
+    .data("Audio piece")
+    .attr("x", textStart)
+    .attr("y", legend2start+23+spacing)
+    // .attr("dx", 7)
+    // .attr("dy", 0)
+    .attr("fill", "red")
+    .text("Audio piece");
+
+//  legend2.append("circle")
+// 	.attr("cx",20)
+// 	.attr("cy",legend2start+18+2*spacing)
+// 	.attr("r", 9)
+// 	.attr("fill", "red")
+// ;
+
+// legend2.append("circle")
+// 	.attr("cx",50)
+// 	.attr("cy",legend2start+18+2*spacing)
+// 	.attr("r", 9)
+// 	.attr("fill", "blue")
+// ;
+
+legend2.append("line").attr("x1", 10).attr("y1", legend2start+18+2*spacing)
+		.attr("x2", 30).attr("y2", legend2start+18+2*spacing)
+		.attr("stroke","red").attr("stroke-width",4);
+legend2.append("text").attr("x", textStart).attr("y", legend2start+22+2*spacing).attr("fill", "red")
+		.text("Link to producer of piece");
+
+legend2.append("line").attr("x1", 10).attr("y1", legend2start+18+3*spacing)
+		.attr("x2", 30).attr("y2", legend2start+18+3*spacing)
+		.attr("stroke","blue").attr("stroke-width",4);
+legend2.append("text").attr("x", textStart).attr("y", legend2start+22+3*spacing).attr("fill", "blue")
+		.text("Recommendation by producer");
   
 //>>>legend/labels
 //append("div").attr("overflow", "scroll").
@@ -477,7 +547,7 @@ var legend = svg.append("g");
 
 legend.append("rect")
     .attr("width", textWidth)
-    .attr("height", 50)
+    .attr("height", 30)
     .attr("rx", 15)
     .attr("ry", 15)
     .attr("fill", "white")
@@ -491,6 +561,7 @@ var legendText = legend.append("text")
     .attr("dy", 0)
     .text(testText)
     .call(wrap, textWidth);
+
 
 
 
@@ -550,8 +621,9 @@ function zoom_actions(){
   {
       var listOfNodes = [];
 
-      legend.selectAll("rect").transition().duration(1000).attr("height", 50);
+      legend.selectAll("rect").transition().duration(1000).attr("height", 30);
       legendText.text("RadioNet").data("RadioNet").call(wrap, textWidth);
+      
 
 
       link
@@ -594,6 +666,8 @@ function zoom_actions(){
           legend.selectAll("text").text(info).data(info).call(wrap, textWidth).transition();
           //console.log(legendText.text().selectAll("tspan"));
           legend.selectAll("rect").transition().duration(1000).attr("height", height);
+          legend.select("text").style("fill", "#00000000");
+          legend.select("text").transition().duration(700).delay(500).style("fill", "black");
           //zoom_handler.translateBy(svg, (width/2)-d.node.x, (height/2)-d.node.y);
           }
 
