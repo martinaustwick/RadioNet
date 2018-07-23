@@ -470,12 +470,13 @@ simulation.on("tick", tick );
 
 
 var legend2 = svg.append("g"); 
-var legend2start = 35;
+var legend2start = height-110;
 var textStart = 42;
 var spacing = 24;
 legend2rect = 
 	legend2.append("rect")
 	.attr("y", legend2start)
+	.attr("x", 1)
     .attr("width", textWidth)
     .attr("height", 108)
     .attr("rx", 15)
@@ -547,6 +548,8 @@ var legend = svg.append("g");
 
 legend.append("rect")
     .attr("width", textWidth)
+    .attr("y",1)
+    .attr("x",1)
     .attr("height", 30)
     .attr("rx", 15)
     .attr("ry", 15)
@@ -665,7 +668,7 @@ function zoom_actions(){
 
           legend.selectAll("text").text(info).data(info).call(wrap, textWidth).transition();
           //console.log(legendText.text().selectAll("tspan"));
-          legend.selectAll("rect").transition().duration(1000).attr("height", height);
+          legend.selectAll("rect").transition().duration(1000).attr("height", height-2);
           legend.select("text").style("fill", "#00000000");
           legend.select("text").transition().duration(700).delay(500).style("fill", "black");
           //zoom_handler.translateBy(svg, (width/2)-d.node.x, (height/2)-d.node.y);
