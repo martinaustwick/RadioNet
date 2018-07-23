@@ -78,6 +78,29 @@ function wrap(text, width) {
 }
 
 
+  function nodeByName(name) {
+    return nodesByName[name] || (nodesByName[name] = {name: name});
+  }
+
+  function nodeByNode(node, name) {
+    /*
+        look for a node within dict "nodesByName"
+       with the key "identifier"
+       If it doesn't exist create it as "identifier":node pair
+       Then we can retrieve the node using the identifier later, 
+       and keep a track of which identifiers exist while we populate a list of unique nodes
+       Also, if a node has an entry BUT NO NODE, add the node
+    */
+
+    //checks the name entry exists
+    if(!nodesByName[name]) nodesByName[name] = {name: name, node:node};
+    //checks the entry has a node!
+    if(!nodesByName[name].node) nodesByName[name].node = node;
+    //nodesByName[name] = {name: name, node:node};
+    return nodesByName[name];
+  }
+
+
 
 
     //
@@ -89,100 +112,198 @@ var g = svg.append("g")
 
 //create nodes and links from producers table
 d3.csv("data/producers50.csv", function(error, reccs) {
-  if (error) {
-    console.log("import error");
-    throw error;
-  }
-
-
   
-
   reccs.forEach(function(recc) {
 
+   if(recc.name.length>0) var s= nodeByNode(recc, recc.id);
+
+
     //currently using this logic, which excludes orphan (unconnected) nodes
-    var noTarget = true;
-    if(recc.recommends_1.length>0) noTarget = false;
-    if(recc.recommends_2.length>0) noTarget = false;
-    if(recc.recommends_3.length>0) noTarget = false;
-    if(recc.recommends_4.length>0) noTarget = false;
-    if(recc.recommends_5.length>0) noTarget = false;
+    // var targetExists = false;
+    // if(recc.recommends_1.length>0) targetExists = true;
+    // if(recc.recommends_2.length>0) targetExists = true;
+    // if(recc.recommends_3.length>0) targetExists = true;
+    // if(recc.recommends_4.length>0) targetExists = true;
+    // if(recc.recommends_5.length>0) targetExists = true;
 
-    //var s= nodeByNode(recc, recc.id);
 
-    if(!noTarget)
-    {
-      //console.log(recc.id);
-      var s= nodeByNode(recc, recc.id);
-     
-      //was target
-      var t = nodeByName(recc.recommends_1);    
-      //console.log(t);
-      if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
 
-      t = nodeByName(recc.recommends_2);
-      if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
+    //   if(targetExists)
+    //   {
+    //     //console.log(recc.id);
+    //     var s= nodeByNode(recc, recc.id);
+       
+    //     //was target
+    //     var t = nodeByName(recc.recommends_1);    
+    //     //console.log(t);
+    //     if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
 
-      t = nodeByName(recc.recommends_3);
-      //console.log(t);
-      if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
+    //     t = nodeByName(recc.recommends_2);
+    //     if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
 
-      t = nodeByName(recc.recommends_4);
-      //console.log(t);
-      if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
+    //     t = nodeByName(recc.recommends_3);
+    //     //console.log(t);
+    //     if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
 
-      t = nodeByName(recc.recommends_5);
-      if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
-    }
+    //     t = nodeByName(recc.recommends_4);
+    //     //console.log(t);
+    //     if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
+
+    //     t = nodeByName(recc.recommends_5);
+    //     if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
+    //   }
+
+
+     });
   
-  });
+  console.log("forget asynchronous data loading, let's dance!");
+  //callback to do EVERYTHING ELSE
+  loadAudio();
 
-
-
-  function nodeByName(identifier) {
-    return nodesByName[identifier] || (nodesByName[identifier] = {name: identifier});
-  }
-
-  function nodeByNode(node, identifier) {
-    //console.log(nodesByName[name]);
-    if(!nodesByName[identifier]) nodesByName[identifier] = {name: identifier, node: node};
-    return nodesByName[identifier];
-    
-  }
 });
 
+//console.log(nodesByName);
+
+function loadAudio()
+{
+
+  /*
+      callback function within producer-load routine, to prevent wacky JS asynchronicity
+      don't forget the bracket!
+  */
 
 //create nodes and links from 
-d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
+d3.csv("data/audio1.csv", function(error, reccs) {
   if (error) throw error;
 
 
   reccs.forEach(function(recc) {
 
-    var noTarget = true;
-    if(recc.producer_id.length>0) noTarget = false;
-    if(recc.producer_2_id.length>0) noTarget = false;
-    if(recc.producer_3_id.length>0) noTarget = false;
+    if(recc.name.length>0) var s= nodeByNode(recc, recc.id);
+
+  //   var noTarget = true;
+  //   if(recc.producer_id.length>0) noTarget = false;
+  //   if(recc.producer_2_id.length>0) noTarget = false;
+  //   if(recc.producer_3_id.length>0) noTarget = false;
+
     
-    if(!noTarget)
-    {
-      //var s= nodeByName(recc.id);
-      var s= nodeByNode2(recc, recc.id);
-      //console.log(s);
-      var t = nodeByName(recc.producer_id);
-      if(t.name.length>0)links.push({source: s, target: t, weight:1.5});
+  //   if(!noTarget)
+  //   {
+  //     //var s= nodeByName(recc.id);
+  //     var s= nodeByNode(recc, recc.id);
+  //     //console.log(s);
+  //     var t = nodeByName(recc.producer_id);
+  //     if(t.name.length>0)links.push({source: s, target: t, weight:1.5});
 
-      t = nodeByName(recc.producer_2_id);
-      if(t.name.length>0)links.push({source: s, target: t, weight:1.5});
+  //     t = nodeByName(recc.producer_2_id);
+  //     if(t.name.length>0)links.push({source: s, target: t, weight:1.5});
 
-      t = nodeByName(recc.producer_3_id);
-      if(t.name.length>0)links.push({source: s, target: t, weight:1.5});
-    }
+  //     t = nodeByName(recc.producer_3_id);
+  //     if(t.name.length>0)links.push({source: s, target: t, weight:1.5});
+  //   }
+   });
+
+    console.log("forget asynchronous data loading, let's art!");
+    setLinks();
+    drawGraph();
+    
 
   });
 
+function setLinks()
+{
+    //console.log(nodesByName);
+    for(var s in nodesByName){
+      //console.log(key);
+      //console.log(nodesByName[key].node);
+      var currentNode = nodesByName[s].node;
+      if(s[0]=='P')
+      {
+            var t = currentNode.recommends_1;    
+             if(t.length>0)links.push({source: s, target: t, weight:0.1});
+             //console.log(currentNode);
+
+             t = currentNode.recommends_2;    
+             if(t.length>0)links.push({source: s, target: t, weight:0.1});
+             t = currentNode.recommends_3;    
+             if(t.length>0)links.push({source: s, target: t, weight:0.1});
+             t = currentNode.recommends_4;    
+             if(t.length>0)links.push({source: s, target: t, weight:0.1});
+             t = currentNode.recommends_5;    
+             if(t.length>0)links.push({source: s, target: t, weight:0.1});
+
+
+    //     t = nodeByName(recc.recommends_2);
+    //     if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
+
+    //     t = nodeByName(recc.recommends_3);
+    //     //console.log(t);
+    //     if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
+
+    //     t = nodeByName(recc.recommends_4);
+    //     //console.log(t);
+    //     if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
+
+    //     t = nodeByName(recc.recommends_5);
+    //     if(t.name.length>0)links.push({source: s, target: t, weight:0.1});
+      }
+      else
+      {
+          var t = currentNode.producer_id;
+          // console.log(currentNode);
+          // console.log(s);
+          // console.log(t);
+          if(t.length>0){
+            links.push({source: s, target: t, weight:1.5});
+            //console.log("link created");
+          }
+
+          t = currentNode.producer_2_id;
+          if(t.length>0)links.push({source: s, target: t, weight:1.5});
+
+          t = currentNode.producer_3_id;
+          if(t.length>0)links.push({source: s, target: t, weight:1.5});
+
+          // t = nodeByName(recc.producer_2_id);
+          // if(t.name.length>0)links.push({source: s, target: t, weight:1.5});
+
+          // t = nodeByName(recc.producer_3_id);
+          // if(t.name.length>0)links.push({source: s, target: t, weight:1.5});
+      }
+    }
+    console.log(links);
+    console.log("links completed");
+
+}
+
+function drawGraph()
+{
+   console.log("drawing started");
+
+  //I'm hacking this mf because of its stupid asynchronous load methods 
+//   function sleep(milliseconds) {
+//   var start = new Date().getTime();
+//   for (var i = 0; i < 1e7; i++) {
+//     if ((new Date().getTime() - start) > milliseconds){
+//       break;
+//     }
+//   }
+// }
+
+  //sleep(5000);
+
   // Extract the array of nodes from the map by name.
   //key/value pair is the context?
+  //console.log(nodesByName[""]);
+  //delete nodesByName[""];
+  // for(var key in nodesByName){
+  //     //console.log(nodesByName[key].node);
+  //     if(!nodesByName[key].node) delete nodesByName[key];
+  //     else console.log(nodesByName[key].node);
+  // }
+
   var nodes = d3.values(nodesByName);
+  //console.log(nodes);
 
   // Create the link lines.
   var link = //svg.selectAll(".link")
@@ -193,15 +314,15 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
     .enter().append("line")
       .attr("class", "link")
       .style("stroke", function(d){
-        //console.log(d.id.name);
-        if(d.source.name[0]=='P') return '#00000000';
+        //console.log(d);
+        if(d.source[0]=='P') return '#00000000';
         //if(d.id.name[0]=='P') return '#00000000';
         //else return '#FF111100'; 
         else return 'red';
       })
       .style("stroke-width",function(d)
       {
-        if(d.source.name[0]=='P') return 1;
+        if(d.source[0]=='P') return 1;
         else return 4;
 
       })
@@ -265,27 +386,12 @@ d3.csv("data/audio_pieces_mod.csv", function(error, reccs) {
          else return d.name
       });
 
-      
- 
-  // Start the force layout.
-  // force
-  //     .nodes(nodes)
-  //     .links(links)
-  //     .on("tick", tick)
-  //     .linkDistance(5)
-  //     .charge(-60)
-  //     .start()
-  //     .linkStrength(function(link)
-  //       {
-  //         return link.weight;
-  //       });
-
-  //set up the simulation and add forces  
+   
 var simulation = d3.forceSimulation()
           .nodes(nodes);
                               
 var link_force =  d3.forceLink(links)
-                        .id(function(d) { return d.name; })
+                        .id(function(d) {return d.name; })
                         .distance(40)
                         .strength(function(d){return d.weight;})
                         //strength(1)
@@ -298,6 +404,7 @@ var charge_force = d3.forceManyBody()
     
 var center_force = d3.forceCenter(width / 2, height / 2);  
 
+//console.log(links[208]);
 
 simulation
     .force("charge_force", charge_force)
@@ -313,26 +420,24 @@ simulation
     .alphaDecay(0.001)
  ;
 
-// node.each(function(d, i) {
-//         d.x = d.y = i;
-//       });
+
 
 
 //code to hard fix some of the NaNs
-link.each(function(d){
-  d.source.x = 10;
-  d.source.y = 10;
-  d.target.x = 10;
-  d.target.y = 10;
-});
+// link.each(function(d){
+//   d.source.x = 10;
+//   d.source.y = 10;
+//   d.target.x = 10;
+//   d.target.y = 10;
+// });
 
-link
-        .attr("x1", 10 )
-        .attr("x1", 10 )
-        .attr("y1", 20 )
-        .attr("x2", 20 )
-        .attr("y2", 20 );
-node.attr("transform", function(d) { return "translate(" + 10 + "," + 10 + ")"; });
+// link
+//         .attr("x1", 10 )
+//         .attr("x1", 10 )
+//         .attr("y1", 20 )
+//         .attr("x2", 20 )
+//         .attr("y2", 20 );
+// node.attr("transform", function(d) { return "translate(" + 10 + "," + 10 + ")"; });
         
 var iteration = 0;
 
@@ -394,17 +499,7 @@ var legendText = legend.append("text")
 
 
 
-  function nodeByName(name) {
-    return nodesByName[name] || (nodesByName[name] = {name: name});
-  }
 
-  function nodeByNode2(node, name) {
-    //console.log(nodesByName[name]);
-    if(!nodesByName[name]) nodesByName[name] = {name: name, node:node};
-    if(!nodesByName[name].node) nodesByName[name].node = node;
-    //nodesByName[name] = {name: name, node:node};
-    return nodesByName[name];
-  }
 
   // function newNode(node, name)
   // {
@@ -455,109 +550,103 @@ function zoom_actions(){
     g.attr("transform", d3.event.transform)
 }
 
-function onClick(or)
-{
-    var listOfNodes = [];
+  function onClick(or)
+  {
+      var listOfNodes = [];
 
-    legend.selectAll("rect").transition().duration(1000).attr("height", 50);
-    legendText.text("RadioNet").data("RadioNet").call(wrap, textWidth);
+      legend.selectAll("rect").transition().duration(1000).attr("height", 50);
+      legendText.text("RadioNet").data("RadioNet").call(wrap, textWidth);
 
 
-    link
-    .style('stroke', function(d){
-        var alpha = '55';
+      link
+      .style('stroke', function(d){
+          var alpha = '55';
 
-        //make links to and from the clicked node more opaque
-        if(d.source.name==or || d.target.name==or || or<0)
-         {
-          alpha="FF";
-          listOfNodes.push(d.source.name);
-          listOfNodes.push(d.target.name);
-        }
+          //make links to and from the clicked node more opaque
+          if(d.source.name==or || d.target.name==or || or<0)
+           {
+            alpha="FF";
+            listOfNodes.push(d.source.name);
+            listOfNodes.push(d.target.name);
+          }
 
-        ///set text
-        // if(d.source.name==or) {
-        //   console.log(d.source.node);
-        //   legendText.text(d.source.node.bio).data(d.source.node.bio).call(wrap, textWidth);
-        // }
+          ///set text
+          // if(d.source.name==or) {
+          //   console.log(d.source.node);
+          //   legendText.text(d.source.node.bio).data(d.source.node.bio).call(wrap, textWidth);
+          // }
 
-        //producer and audio colour if
-        if(d.source.name[0]=='P'){
-          if(d.source.name==or || d.target.name==or) alpha = "FF";
-          else alpha = "00";
-          return '#0011FF'+alpha;
-        }
-        else return '#FF1111'+alpha;
-      })
-    .style("stroke-width",function(d)
-      {
-        var w = 1;
-        if(d.source.name[0]=='A') w+=3;
-        if(d.source.name==or || d.target.name==or) w*=2
-        return w;
-      })
-    ;
+          //producer and audio colour if
+          if(d.source.name[0]=='P'){
+            if(d.source.name==or || d.target.name==or) alpha = "FF";
+            else alpha = "00";
+            return '#0011FF'+alpha;
+          }
+          else return '#FF1111'+alpha;
+        })
+      .style("stroke-width",function(d)
+        {
+          var w = 1;
+          if(d.source.name[0]=='A') w+=3;
+          if(d.source.name==or || d.target.name==or) w*=2
+          return w;
+        })
+      ;
 
-    node.each(function(d){
-      if(d.name==or) {
-         //console.log(d.node.bio);
-         //consistent URL naming
-         var info = d.node.name + " : ";
-        if(d.name[0]=='P' && d.node.bio.length>0) info = info + d.node.bio;
-        if(d.name[0]=='A' && d.node.description.length>0) info = info + d.node.description;
+      node.each(function(d){
+        if(d.name==or) {
+           console.log(d.node);
+           //consistent URL naming
+           var info = d.node.name + " : ";
+          if(d.name[0]=='P' && d.node.bio.length>0) info = info + d.node.bio;
+          if(d.name[0]=='A' && d.node.description.length>0) info = info + d.node.description;
 
-        legend.selectAll("text").text(info).data(info).call(wrap, textWidth).transition();
-        //console.log(legendText.text().selectAll("tspan"));
-        legend.selectAll("rect").transition().duration(1000).attr("height", height);
+          legend.selectAll("text").text(info).data(info).call(wrap, textWidth).transition();
+          //console.log(legendText.text().selectAll("tspan"));
+          legend.selectAll("rect").transition().duration(1000).attr("height", height);
 
-        }
-    });
-
-   
-    node.selectAll('circle')
-    .attr('fill', function(d)
-      {
-        var alpha = deselectAlpha;
-
-        if(d.name==or) alpha="FF";
-        else if(listOfNodes.indexOf(d.name)>-1) alpha = 'CC';
-
-        if(d.name[0]=='P') return '#0011FF'+alpha;
-        else return '#FF1111'+alpha;
-
-        // //set text
-        // if(d.name==or) {
-        //   console.log(d.name);
-        // }
-      })
-    // .attr('stroke', function(d)
-    //   {
-    //     if(d.name==or) return "black";
-    //     else return "#00000000";
-    //   })
-    ;
-
-    node.selectAll('text')
-    .attr('fill', function(d)
-      {
-        var alpha = deselectAlpha;
-        if(d.name==or) alpha="FF";
-        else if(listOfNodes.indexOf(d.name)>-1) alpha = 'CC';
-
-        if(d.name[0]=='P') return '#0011FF'+alpha;
-        else return '#FF1111'+alpha;
-
+          }
       });
 
-    
+     
+      node.selectAll('circle')
+      .attr('fill', function(d)
+        {
+          var alpha = deselectAlpha;
 
-}
+          if(d.name==or) alpha="FF";
+          else if(listOfNodes.indexOf(d.name)>-1) alpha = 'CC';
+
+          if(d.name[0]=='P') return '#0011FF'+alpha;
+          else return '#FF1111'+alpha;
+
+          // //set text
+          // if(d.name==or) {
+          //   console.log(d.name);
+          // }
+        })
+      ;
+
+      node.selectAll('text')
+      .attr('fill', function(d)
+        {
+          var alpha = deselectAlpha;
+          if(d.name==or) alpha="FF";
+          else if(listOfNodes.indexOf(d.name)>-1) alpha = 'CC';
+
+          if(d.name[0]=='P') return '#0011FF'+alpha;
+          else return '#FF1111'+alpha;
+
+        });
+
+  }//onClick()
+
+}//drawGraphs
 
 
 
+//});
 
-
-});
-
+}//callback
 
 </script>
