@@ -22,7 +22,7 @@
 var width = 960,
     height = 500;
 
-    var deselectAlpha = '20';
+    var deselectAlpha = '10';
 
 var svg = d3.select("body").append("svg")
     .attr("width", width)
@@ -215,31 +215,34 @@ function setLinks()
     links = [];
     console.log(nodesByName);
     for(var s in nodesByName){
+
+    	var farWeight = 0.1;
+    	var closeWeight = 1.5;
       
       var currentNode = nodesByName[s].node;
       if(s[0]=='P')
       {
             var t = currentNode.recommends_1;    
-            if(t.length>0) if(nodesByName[t]) links.push({"source": s, "target": t, "weight":0.1});
+            if(t.length>0) if(nodesByName[t]) links.push({"source": s, "target": t, "weight":farWeight});
             
             t = currentNode.recommends_2;    
-            if(t.length>0) if(nodesByName[t]) links.push({"source": s, "target": t, "weight":0.1});
+            if(t.length>0) if(nodesByName[t]) links.push({"source": s, "target": t, "weight":farWeight});
             t = currentNode.recommends_3;    
-            if(t.length>0) if(nodesByName[t]) links.push({"source": s, "target": t, "weight":0.1});
+            if(t.length>0) if(nodesByName[t]) links.push({"source": s, "target": t, "weight":farWeight});
             t = currentNode.recommends_4;    
-            if(t.length>0) if(nodesByName[t]) links.push({"source": s, "target": t, "weight":0.1});
+            if(t.length>0) if(nodesByName[t]) links.push({"source": s, "target": t, "weight":farWeight});
             t = currentNode.recommends_5;    
-            if(t.length>0) if(nodesByName[t]) links.push({"source": s, "target": t, "weight":0.1});
+            if(t.length>0) if(nodesByName[t]) links.push({"source": s, "target": t, "weight":farWeight});
 
       }
       else
       {
           var t = currentNode.producer_id;
-          if(t.length>0) if(nodesByName[t]) links.push({"source": s, "target": t, "weight":1});
+          if(t.length>0) if(nodesByName[t]) links.push({"source": s, "target": t, "weight":closeWeight});
           t = currentNode.producer_2_id;
-          if(t.length>0) if(nodesByName[t]) links.push({"source": s, "target": t, "weight":1});
+          if(t.length>0) if(nodesByName[t]) links.push({"source": s, "target": t, "weight":closeWeight});
           t = currentNode.producer_3_id;
-          if(t.length>0) if(nodesByName[t]) links.push({"source": s, "target": t, "weight":1});
+          if(t.length>0) if(nodesByName[t]) links.push({"source": s, "target": t, "weight":closeWeight});
           //console.log(currentNode);
           //var t = currentNode.producer_id;
           // //console.log(currentNode);
@@ -308,15 +311,16 @@ function drawGraph()
     .enter().append("line")
       .attr("class", "link")
       .style("stroke", function(d){
+      	// return '#000000';
         if(d.source[0]=='P') return '#00000000';
         //if(d.id.name[0]=='P') return '#00000000';
-        //else return '#FF111100'; 
-        else return 'red';
+        else return '#00000021'; 
+        //else return 'red';
       })
       .style("stroke-width",function(d)
       {
         if(d.source[0]=='P') return 1;
-        else return 4;
+        else return 1;
       })
       ;
 
@@ -343,10 +347,16 @@ function drawGraph()
       })
     .attr('fill', function(d)
       {
-        if(d.id[0]=='P') return '#0011FF';
-        else return '#FF1111';
+      	return 'black';
+        // if(d.id[0]=='P') return '#0011FF22';
+        // else return '#FF1111';
       })
-    .attr('stroke', "#FFFFFF55")
+    .attr('stroke', function(d)
+      {
+      	//return 'black';
+        if(d.id[0]=='P') return '#0011FF';
+        else return '#FF111100';
+      })
     .on("click", function(d){
         //console.log("xircle");
         d3.event.stopPropagation();
@@ -363,16 +373,17 @@ function drawGraph()
       .style("font-size", 20)
       .attr('stroke', '#00000000')
       .attr("dx", function(d){
-        if(d.id[0]=='P') return 25;
-        else return 15;
+        if(d.id[0]=='P') return 35;
+        else return 20;
       })
       .attr("dy",function(d){
           if(d.id[0]=='P') return 5;
           else return 5;
       })
       .attr('fill', function(d){
-          if(d.id[0]=='P') return '#0011FF';
-          else return '#FF1111';
+      		return 'black';
+          // if(d.id[0]=='P') return '#0011FF';
+          // else return '#FF1111';
       })
       .text(function(d) { 
          if(d.node) return d.node.name
@@ -476,7 +487,7 @@ var spacing = 24;
 legend2rect = 
 	legend2.append("rect")
 	.attr("y", legend2start)
-	.attr("x", 1)
+	.attr("x",  1)
     .attr("width", textWidth)
     .attr("height", 108)
     .attr("rx", 15)
@@ -623,6 +634,9 @@ function zoom_actions(){
   function onClick(or)
   {
       var listOfNodes = [];
+      var listOfSources = [];
+      var listOfTargets = [];
+      var tertiaryNodes = [];
 
       legend.selectAll("rect").transition().duration(1000).attr("height", 30);
       legendText.text("RadioNet").data("RadioNet").call(wrap, textWidth);
@@ -631,28 +645,33 @@ function zoom_actions(){
 
       link
       .style('stroke', function(d){
-          var alpha = '55';
+          var alpha = '44';
           //make links to and from the clicked node more opaque
           
           if(d.source.id==or || d.target.id==or || or<0)
            {
             alpha="FF";            
             listOfNodes.push(d.source.id);
+            listOfSources.push(d.source.id);
             listOfNodes.push(d.target.id);
+            listOfTargets.push(d.target.id);
+            //return '#0011FF'+alpha;
+            if(or<0) alpha = '00';
+
           }
 
-          //producer and audio colour if
           if(d.source.id[0]=='P'){
-            if(d.source.id==or || d.target.id==or) alpha = "FF";
-            else if(or<0) alpha = "00";
+            //if(d.source.id==or || d.target.id==or) alpha = "FF";
+            //else if(or<0) alpha = "00";
             return '#0011FF'+alpha;
           }
           else return '#FF1111'+alpha;
+          //else return '#FF111100';
         })
       .style("stroke-width",function(d)
         {
-          var w = 2;
-          if(d.source.id[0]=='A') w+=3;
+          var w = 0.5;
+          if(d.source.id[0]=='A') w+=5;
           if(d.source.id==or || d.target.id==or) w*=2
           return w;
         })
@@ -677,16 +696,80 @@ function zoom_actions(){
       });
      
       node.selectAll('circle')
-      .attr('fill', function(d)
+      	.attr("stroke-width",10)
+        .attr('stroke', function(d)
         {
-          var alpha = deselectAlpha;
+	        var alpha = 'FF';
+	        var col = '#000000';
+	        console.log(or);
 
-          if(d.id==or) alpha="FF";
-          else if(listOfNodes.indexOf(d.id)>-1) alpha = 'CC';
+          	if(or.length>0)
+          	{
 
-          if(d.id[0]=='P') return '#0011FF'+alpha;
-          else return '#FF1111'+alpha;
+          	  	alpha = deselectAlpha;
+	          	if(d.id==or) 
+		      	{
+		      		alpha="FF";
+		      		col = '#ff1111';
+		      		// if(d.id[0]=='P') col = '#ff1111';
+		      		// else col = '#0011ff'; 
+		      		
+		      	}
+	          	else if(listOfNodes.indexOf(d.id)>-1) {
 
+	          	alpha = "FF";
+	          	if(d.id[0]=='P') {
+	          		if(listOfSources.indexOf(d.id)>-1) col = '#0011ff';
+	          		if(listOfTargets.indexOf(d.id)>-1) col = '#ff1111';
+	          	}
+	          	else {
+	          		//col = "#0011ff";
+	          		if(listOfSources.indexOf(d.id)>-1) col = '#ff1111';
+	          		if(listOfTargets.indexOf(d.id)>-1) col = '#0011FF';
+	          	}
+	          	//console.log(col);
+	          }
+      	  	}//if selected
+
+          col = col+alpha;
+          return col;
+        })
+        .attr('fill', function(d)
+        {
+	        var alpha = 'FF';
+	        var col = '#000000';
+	        console.log(or);
+
+          	if(or.length>0)
+          	{
+
+          	  	alpha = deselectAlpha;
+	          	if(d.id==or) 
+		      	{
+		      		alpha="EE";
+		      		col = '#0011ff';
+		      		// if(d.id[0]=='P') col = '#0011ff';
+		      		// else col = '#ff1111'; 
+		      		
+		      	}
+	          	else if(listOfNodes.indexOf(d.id)>-1) {
+
+	          	alpha = "FF";
+	          	if(d.id[0]=='P') {
+	          		if(listOfSources.indexOf(d.id)>-1) col = '#0011ff';
+	          		if(listOfTargets.indexOf(d.id)>-1) col = '#ff1111';
+	          	}
+	          	else {
+	          		//col = "#0011ff";
+	          		if(listOfSources.indexOf(d.id)>-1) col = '#ff1111';
+	          		if(listOfTargets.indexOf(d.id)>-1) col = '#0011ff';
+	          	}
+	          	//console.log(col);
+	          }
+      	  	}//if selected
+
+          col = col+alpha;
+          return col;
         })
       ;
 
@@ -695,10 +778,10 @@ function zoom_actions(){
         {
           var alpha = deselectAlpha;
           if(d.id==or) alpha="FF";
-          else if(listOfNodes.indexOf(d.id)>-1) alpha = 'CC';
-
-          if(d.id[0]=='P') return '#0011FF'+alpha;
-          else return '#FF1111'+alpha;
+          else if(listOfNodes.indexOf(d.id)>-1) alpha = "CC";
+          return '#000000'+alpha;
+          // if(d.id[0]=='P') return '#0011FF'+alpha;
+          // else return '#FF1111'+alpha;
 
         });
 
