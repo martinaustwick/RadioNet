@@ -637,6 +637,7 @@ function zoom_actions(){
       var listOfSources = [];
       var listOfTargets = [];
       var tertiaryNodes = [];
+      var quatNodes = [];
 
       legend.selectAll("rect").transition().duration(1000).attr("height", 30);
       legendText.text("RadioNet").data("RadioNet").call(wrap, textWidth);
@@ -652,12 +653,13 @@ function zoom_actions(){
            {
             alpha="FF";            
             listOfNodes.push(d.source.id);
+            //if(d.source.id==or) 
             listOfSources.push(d.source.id);
             listOfNodes.push(d.target.id);
+            //if(d.target.id==or) 
             listOfTargets.push(d.target.id);
             //return '#0011FF'+alpha;
             if(or<0) alpha = '00';
-
           }
 
           if(d.source.id[0]=='P'){
@@ -694,6 +696,55 @@ function zoom_actions(){
           }
 
       });
+      console.log('link');
+
+      link.each(function (d)
+      {
+      		if(listOfTargets.indexOf(d.source.id)>-1 && d.source.id!=or)
+      		{
+      			tertiaryNodes.push(d.target.id);
+      		}
+
+      		// if(listOfSources.indexOf(d.target.id)>-1 && d.target.id!=or)
+      		// {
+      		// 	tertiaryNodes.push(d.source.id);
+      		// }
+      });
+
+      
+
+       link.each(function (d)
+      	{
+      		if(tertiaryNodes.indexOf(d.source.id)>-1 && listOfNodes.indexOf(d.target.id)<0 &&  d.source.id!=or)
+      		{
+      			quatNodes.push(d.target.id);
+      		}
+
+      		if(tertiaryNodes.indexOf(d.target.id)>-1 && listOfNodes.indexOf(d.source.id)<0 && d.target.id!=or)
+      		{
+      			quatNodes.push(d.source.id);
+      		}
+      	});
+
+      link.style('stroke', function(d)
+      {	
+      		var col2 = d3.select(this).style('stroke');
+      		console.log("col");
+      		console.log(col2);
+      		if(tertiaryNodes.indexOf(d.source.id)>-1 || tertiaryNodes.indexOf(d.target.id)>-1) col2 = "#0011FF66";
+      		if(quatNodes.indexOf(d.source.id)>-1 || quatNodes.indexOf(d.target.id)>-1) col2 = "#11ff1166";
+      		if(or<0) col2 = "#00000000";
+      		return col2;
+      });
+
+      console.log("tertiaryNodes");
+      console.log(tertiaryNodes);
+
+      // for(var i = 0; i<listOfTargets.length; i++)
+      // {
+      // 	 console.log(listOfTargets[i]);
+      // 	 //console.log(link[listOfTargets[i]]);
+      // }
      
       node.selectAll('circle')
       	.attr("stroke-width",10)
@@ -717,7 +768,7 @@ function zoom_actions(){
 		      	}
 	          	else if(listOfNodes.indexOf(d.id)>-1) {
 
-	          	alpha = "FF";
+	          	alpha = "00";
 	          	if(d.id[0]=='P') {
 	          		if(listOfSources.indexOf(d.id)>-1) col = '#0011ff';
 	          		if(listOfTargets.indexOf(d.id)>-1) col = '#ff1111';
@@ -754,18 +805,34 @@ function zoom_actions(){
 		      	}
 	          	else if(listOfNodes.indexOf(d.id)>-1) {
 
-	          	alpha = "FF";
-	          	if(d.id[0]=='P') {
-	          		if(listOfSources.indexOf(d.id)>-1) col = '#0011ff';
-	          		if(listOfTargets.indexOf(d.id)>-1) col = '#ff1111';
+		          	alpha = "DD";
+		          	if(d.id[0]=='P') 
+		          	{
+		          		if(listOfSources.indexOf(d.id)>-1) col = '#0011ff';
+		          		if(listOfTargets.indexOf(d.id)>-1) col = '#ff1111';
+		          	}
+		          	else 
+		          	{
+		          		//col = "#0011ff";
+		          		if(listOfSources.indexOf(d.id)>-1) col = '#ff1111';
+		          		if(listOfTargets.indexOf(d.id)>-1) col = '#0011ff';
+		          	}
+		          	//console.log(col);
+		          	
+	          	}//if secondary
+
+	          	if(tertiaryNodes.indexOf(d.id)>-1)
+	          	{
+	          		col = "#0011ff";
+	          		alpha = "88";
 	          	}
-	          	else {
-	          		//col = "#0011ff";
-	          		if(listOfSources.indexOf(d.id)>-1) col = '#ff1111';
-	          		if(listOfTargets.indexOf(d.id)>-1) col = '#0011ff';
+
+	          	if(quatNodes.indexOf(d.id)>-1)
+	          	{
+	          		col = "#11AA11";
+	          		alpha = "88";
 	          	}
-	          	//console.log(col);
-	          }
+	          	
       	  	}//if selected
 
           col = col+alpha;
