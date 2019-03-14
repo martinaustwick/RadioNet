@@ -36,7 +36,7 @@ var svg = d3.select("body").append("svg")
 var greeny ="#119911";
 var reddy = "#FF1111";
 var bluey = "#0011FF";
-var tertiaryAlpha = '88';
+var tertiaryAlpha = '66';
 
 var nodesByName = {};
 var links = [];
@@ -638,8 +638,8 @@ function zoom_actions(){
       var listOfNodes = [];
       var listOfSources = [];
       var listOfTargets = [];
-      var tertiarySources = [];
-      var tertiaryTargets = [];
+      // var tertiarySources = [];
+      // var tertiaryTargets = [];
       var tertiaryNodes = [];
       var quatNodes = [];
 
@@ -647,6 +647,8 @@ function zoom_actions(){
       var TT = [];
       var ST = [];
       var TS = [];
+
+
 
       legend.selectAll("rect").transition().duration(1000).attr("height", 30);
       legendText.text("RadioNet").data("RadioNet").call(wrap, textWidth);
@@ -662,11 +664,9 @@ function zoom_actions(){
            {
             alpha="FF";            
             listOfNodes.push(d.source.id);
-            //if(d.source.id==or) 
-            listOfSources.push(d.source.id);
+            if(d.source.id==or) listOfTargets.push(d.target.id);
             listOfNodes.push(d.target.id);
-            //if(d.target.id==or) 
-            listOfTargets.push(d.target.id);
+            if(d.target.id==or) listOfSources.push(d.source.id);
             //return '#0011FF'+alpha;
             if(or<0) alpha = '00';
           }
@@ -709,22 +709,22 @@ function zoom_actions(){
 
       link.each(function (d)
       {			
-      		if(listOfSources.indexOf(d.target.id)>-1 && d.target.id!=or)
+      		if(listOfSources.indexOf(d.target.id)>-1 && d.source.id!=or)
       		{
       			SS.push(d.source.id);
       		}
 
-      		if(listOfSources.indexOf(d.source.id)>-1 && d.source.id!=or)
+      		if(listOfSources.indexOf(d.source.id)>-1 && d.target.id!=or)
       		{
       			ST.push(d.target.id);
       		}	
 
-      		if(listOfTargets.indexOf(d.source.id)>-1 && d.source.id!=or)
+      		if(listOfTargets.indexOf(d.source.id)>-1 && d.target.id!=or)
       		{
       			TT.push(d.target.id);
       		}
 
-      		if(listOfTargets.indexOf(d.target.id)>-1 && d.target.id!=or)
+      		if(listOfTargets.indexOf(d.target.id)>-1 && d.source.id!=or)
       		{
       			TS.push(d.source.id);
       		}
@@ -751,13 +751,13 @@ function zoom_actions(){
       {	
       		var col2 = d3.select(this).style('stroke');
 
-      		if(TT.indexOf(d.target.id)>-1) col2 = bluey+tertiaryAlpha;
+      		if(TT.indexOf(d.target.id)>-1 && d.target.id!=or) col2 = bluey+tertiaryAlpha;
       		else if (SS.indexOf(d.source.id)>-1)
       		{
       			if(d.source.id[0]=='P') col2 = greeny+tertiaryAlpha;
       			else col2 = bluey+tertiaryAlpha;
       		}
-      		else if(TS.indexOf(d.source.id)>-1) 
+      		else if(TS.indexOf(d.source.id)>-1 && d.target.id!=or) 
       		{
       			if(d.source.id[0]=='P') col2 = greeny+tertiaryAlpha;
       			else col2 = reddy+tertiaryAlpha;
@@ -858,26 +858,26 @@ function zoom_actions(){
 
 	          	if(TT.indexOf(d.id)>-1) {
 	          		col = bluey;
-	          		alpha = "88";
+	          		alpha = tertiaryAlpha;
 	          	}
 	      		else if (SS.indexOf(d.id)>-1)
 	      		{
 	      			if(d.id[0]=='P') col = greeny;
 	      			else col = bluey;
-	      			alpha = "88";
+	      			alpha = tertiaryAlpha;
 	      		}
-	      		// else if(TS.indexOf(d.id)>-1) 
-	      		// {
-	      		// 	if(d.id[0]=='P') col = greeny;
-	      		// 	else col = reddy;
-	      		// 	alpha = "88";
-	      		// }
-	      		// else if(ST.indexOf(d.id)>-1)
-	      		// {
-	      		// 	if(d.id[0]=='P') col = reddy;
-	      		// 	else col = greeny;
-	      		// 	alpha = "88";
-	      		// }
+	      		else if(TS.indexOf(d.id)>-1) 
+	      		{
+	      			if(d.id[0]=='P') col = greeny;
+	      			else col = reddy;
+	      			alpha = tertiaryAlpha;
+	      		}
+	      		else if(ST.indexOf(d.id)>-1)
+	      		{
+	      			if(d.id[0]=='P') col = reddy;
+	      			else col = greeny;
+	      			alpha = tertiaryAlpha;
+	      		}
 
 	        //   	if(tertiaryTargets.indexOf(d.id)>-1)
 	        //   	{
