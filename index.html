@@ -75,6 +75,13 @@ function wrap(text, width) {
         line = [word];
         tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").attr("dx", text.attr("dx")).text(word);
       }
+      //add a linebreak
+      if (word == 'LINEBREAK' || word == 'undefined') {
+        line.pop();
+        tspan.text(line.join(" "));
+        line = [];
+        tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").attr("dx", text.attr("dx")).text(word);
+      }
     }
   });
 }
@@ -226,7 +233,6 @@ function setLinks()
       {
             var t = currentNode.recommends_1;    
             if(t.length>0) if(nodesByName[t]) links.push({"source": s, "target": t, "weight":farWeight});
-            
             t = currentNode.recommends_2;    
             if(t.length>0) if(nodesByName[t]) links.push({"source": s, "target": t, "weight":farWeight});
             t = currentNode.recommends_3;    
@@ -653,7 +659,7 @@ function zoom_actions(){
       legend.selectAll("rect").transition().duration(1000).attr("height", 30);
       legendText.text("RadioNet").data("RadioNet").call(wrap, textWidth);
       
-
+      
 
       link
       .style('stroke', function(d){
@@ -693,7 +699,38 @@ function zoom_actions(){
            console.log(d);
            //consistent URL naming
           var info = d.node.name + " : ";
-          if(d.id[0]=='P' && d.node.bio.length>0) info = info + d.node.bio;
+          //if(d.id[0]=='P' && d.node.bio.length>0) info = info + d.node.bio;
+		  console.log("finding the bio bit");
+          console.log(d.node);
+          if(d.id[0]=='P' && d.node.bio.length>0) {
+          	//info = info + d.node.bio;
+
+
+          	info = info +  ' LINEBREAK ';
+          	//console.log(nodesByName[d.node.recommends_1].node.name);
+          	//console.log(node.data[d.node.recommends_1]);
+
+          	//recommendations:
+          	info = info + nodesByName[d.node.recommends_1].node.name;
+          	info = info +  ' LINEBREAK ';
+          	info = info + d.node.recommends_1_quote;
+          	info = info +  ' LINEBREAK ';
+          	info = info + nodesByName[d.node.recommends_2].node.name;
+          	info = info +  ' LINEBREAK ';
+          	info = info + d.node.recommends_2_quote;
+          	info = info +  ' LINEBREAK ';
+          	info = info + nodesByName[d.node.recommends_3].node.name;
+          	info = info +  ' LINEBREAK ';
+          	info = info + d.node.recommends_3_quote;
+          	info = info +  ' LINEBREAK ';
+          	info = info + nodesByName[d.node.recommends_4].node.name;
+          	info = info +  ' LINEBREAK ';
+          	info = info + d.node.recommends_4_quote;
+          	info = info +  ' LINEBREAK ';
+          	info = info + nodesByName[d.node.recommends_5].node.name;
+          	info = info +  ' LINEBREAK ';
+          	info = info + d.node.recommends_5_quote;
+          }
           if(d.id[0]=='A' && d.node.description.length>0) info = info + d.node.description;
 
           legend.selectAll("text").text(info).data(info).call(wrap, textWidth).transition();
